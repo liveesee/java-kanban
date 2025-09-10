@@ -85,23 +85,23 @@ public class Main {
 
         Task finalTask1 = manager.getTaskById(1);
         Task finalTask2 = manager.getTaskById(2);
-        System.out.println("Статус задачи 1: " + finalTask1.getStatus() + " (должен быть IN_PROGRESS)");
-        System.out.println("Статус задачи 2: " + finalTask2.getStatus() + " (должен быть DONE)");
+        System.out.printf("Статус задачи 1: %s (должен быть IN_PROGRESS)%n", finalTask1.getStatus());
+        System.out.printf("Статус задачи 2: %s (должен быть DONE)%n", finalTask2.getStatus());
 
         Subtask finalSubtask1 = allSubtasks.get(0);
         Subtask finalSubtask2 = allSubtasks.get(1);
         Subtask finalSubtask3 = allSubtasks.get(2);
-        System.out.println("Статус подзадачи 1.1: " + finalSubtask1.getStatus() + " (должен быть DONE)");
-        System.out.println("Статус подзадачи 1.2: " + finalSubtask2.getStatus() + " (должен быть DONE)");
-        System.out.println("Статус подзадачи 2.1: " + finalSubtask3.getStatus() + " (должен быть IN_PROGRESS)");
+        System.out.printf("Статус подзадачи 1.1: %s (должен быть DONE)%n", finalSubtask1.getStatus());
+        System.out.printf("Статус подзадачи 1.2: %s (должен быть DONE)%n", finalSubtask2.getStatus());
+        System.out.printf("Статус подзадачи 2.1: %s (должен быть IN_PROGRESS)%n", finalSubtask3.getStatus());
 
         Epic finalEpic1 = manager.getEpicById(3);
         Epic finalEpic2 = manager.getEpicById(6);
-        System.out.println("Статус эпика 1: " + finalEpic1.getStatus() + " (должен быть DONE - все подзадачи DONE)");
-        System.out.println("Статус эпика 2: " + finalEpic2.getStatus() + " (должен быть IN_PROGRESS - подзадача IN_PROGRESS)");
-        
-        System.out.println("Все задачи: " + manager.getAllTasks());
-        System.out.println("Все эпики: " + manager.getAllEpics());
-        System.out.println("Все подзадачи: " + manager.getAllSubtasks());
+        System.out.printf("Статус эпика 1: %s (должен быть DONE - все подзадачи DONE)%n", finalEpic1.getStatus());
+        System.out.printf("Статус эпика 2: %s (должен быть IN_PROGRESS - подзадача IN_PROGRESS)%n", finalEpic2.getStatus());
+
+        System.out.printf("Все задачи: %s%n", manager.getAllTasks());
+        System.out.printf("Все эпики: %s%n", manager.getAllEpics());
+        System.out.printf("Все подзадачи: %s%n", manager.getAllSubtasks());
     }
 }
