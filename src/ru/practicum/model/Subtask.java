@@ -1,3 +1,5 @@
+package ru.practicum.model;
+
 public class Subtask extends Task {
     private int epicId;
 
