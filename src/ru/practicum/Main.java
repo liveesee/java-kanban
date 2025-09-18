@@ -1,5 +1,7 @@
 package ru.practicum;
 
+import ru.practicum.manager.HistoryManager;
+import ru.practicum.manager.Managers;
 import ru.practicum.manager.TaskManager;
 import ru.practicum.model.Epic;
 import ru.practicum.model.Status;
@@ -10,7 +12,8 @@ import java.util.ArrayList;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager manager = new TaskManager();
+        HistoryManager historyManager = Managers.getDefaultHistory();
+        TaskManager manager = Managers.getDefault(historyManager);
 
         Task task1 = new Task("Задача 1", "Описание задачи 1");
         Task task2 = new Task("Задача 2", "Описание задачи 2");
@@ -33,20 +36,26 @@ public class Main {
         Subtask subtask3 = new Subtask("Подзадача 2.1", "Описание подзадачи 2.1", epic2Id);
         manager.createSubtask(subtask3);
 
-        System.out.println("Задачи:");
-        for (Task task : manager.getAllTasks()) {
-            System.out.println(task);
-        }
+        System.out.println("Просматриваем задачу 1:");
+        Task viewedTask1 = manager.getTaskById(1);
+        System.out.println("Просматриваем эпик 1:");
+        Epic viewedEpic1 = manager.getEpicById(3);
+        System.out.println("Просматриваем подзадачу 1:");
+        Subtask viewedSubtask1 = manager.getSubtaskById(4);
+        System.out.println("Просматриваем задачу 1 повторно:");
+        manager.getTaskById(1);
 
-        System.out.println("\nЭпики:");
-        for (Epic epic : manager.getAllEpics()) {
-            System.out.println(epic);
+        ArrayList<Task> history = manager.getHistory();
+        System.out.printf("\nИстория просмотров (%d записей):%n", history.size());
+        for (int i = 0; i < history.size(); i++) {
+            Task task = history.get(i);
+            System.out.printf("%d. %s ID=%d - %s%n",
+                    (i + 1),
+                    task.getClass().getSimpleName(),
+                    task.getId(),
+                    task.getTitle());
         }
-
-        System.out.println("\nПодзадачи:");
-        for (Subtask subtask : manager.getAllSubtasks()) {
-            System.out.println(subtask);
-        }
+        System.out.println();
 
         Task updatedTask1 = manager.getTaskById(1);
         updatedTask1.setStatus(Status.IN_PROGRESS);
@@ -68,20 +77,23 @@ public class Main {
             manager.updateSubtask(allSubtasks.get(2));
         }
 
-        System.out.println("Задачи:");
-        for (Task task : manager.getAllTasks()) {
-            System.out.println(task);
-        }
+        System.out.println("Просматриваем обновленную задачу 1:");
+        manager.getTaskById(1);
+        System.out.println("Просматриваем обновленную подзадачу 3:");
+        manager.getSubtaskById(7);
 
-        System.out.println("\nЭпики:");
-        for (Epic epic : manager.getAllEpics()) {
-            System.out.println(epic);
+        ArrayList<Task> updatedHistory = manager.getHistory();
+        System.out.printf("\nОбновленная история просмотров (%d записей):%n", updatedHistory.size());
+        for (int i = 0; i < updatedHistory.size(); i++) {
+            Task task = updatedHistory.get(i);
+            System.out.printf("%d. %s ID=%d - %s Status=%s%n",
+                    (i + 1),
+                    task.getClass().getSimpleName(),
+                    task.getId(),
+                    task.getTitle(),
+                    task.getStatus());
         }
-
-        System.out.println("\nПодзадачи:");
-        for (Subtask subtask : manager.getAllSubtasks()) {
-            System.out.println(subtask);
-        }
+        System.out.println();
 
         Task finalTask1 = manager.getTaskById(1);
         Task finalTask2 = manager.getTaskById(2);
@@ -100,8 +112,16 @@ public class Main {
         System.out.printf("Статус эпика 1: %s (должен быть DONE - все подзадачи DONE)%n", finalEpic1.getStatus());
         System.out.printf("Статус эпика 2: %s (должен быть IN_PROGRESS - подзадача IN_PROGRESS)%n", finalEpic2.getStatus());
 
-        System.out.printf("Все задачи: %s%n", manager.getAllTasks());
-        System.out.printf("Все эпики: %s%n", manager.getAllEpics());
-        System.out.printf("Все подзадачи: %s%n", manager.getAllSubtasks());
+        ArrayList<Task> finalHistory = manager.getHistory();
+        System.out.printf("\nФинальная история (%d записей):%n", finalHistory.size());
+        for (int i = 0; i < finalHistory.size(); i++) {
+            Task task = finalHistory.get(i);
+            System.out.printf("%d. %s ID=%d - %s Status=%s%n",
+                    (i + 1),
+                    task.getClass().getSimpleName(),
+                    task.getId(),
+                    task.getTitle(),
+                    task.getStatus());
+        }
     }
 }
