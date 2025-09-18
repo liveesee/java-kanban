@@ -115,7 +115,6 @@ class Tests {
         original.setDescription("updated");
         taskManager.updateTask(original);
         taskManager.getTaskById(original.getId());
-        ArrayList<Task> history = historyManager.getHistory();
         assertEquals("original", historyManager.getHistory().get(0).getDescription(),
                 "История должна хранить старую версию");
         assertEquals("updated", historyManager.getHistory().get(1).getDescription(),
