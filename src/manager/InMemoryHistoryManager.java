@@ -1,6 +1,6 @@
-package ru.practicum.manager;
+package manager;
 
-import ru.practicum.model.Task;
+import model.Task;
 
 import java.util.ArrayList;
 

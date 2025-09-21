@@ -1,9 +1,9 @@
-package ru.practicum.manager;
+package manager;
 
-import ru.practicum.model.Epic;
-import ru.practicum.model.Status;
-import ru.practicum.model.Subtask;
-import ru.practicum.model.Task;
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;

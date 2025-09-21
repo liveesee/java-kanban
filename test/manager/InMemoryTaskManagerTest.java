@@ -1,10 +1,10 @@
-package ru.practicum.manager;
+package manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.practicum.model.Epic;
-import ru.practicum.model.Subtask;
-import ru.practicum.model.Task;
+import model.Epic;
+import model.Subtask;
+import model.Task;
 
 import java.util.List;
 

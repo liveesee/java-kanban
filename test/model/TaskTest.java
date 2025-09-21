@@ -1,8 +1,11 @@
-package ru.practicum.model;
+package model;
 
+import manager.HistoryManager;
+import manager.Managers;
+import manager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.practicum.manager.*;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

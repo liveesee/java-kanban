@@ -1,4 +1,4 @@
-package ru.practicum.model;
+package model;
 
 import java.util.ArrayList;
 

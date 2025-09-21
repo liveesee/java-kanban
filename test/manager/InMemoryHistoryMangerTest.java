@@ -1,8 +1,8 @@
-package ru.practicum.manager;
+package manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.practicum.model.Task;
+import model.Task;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 

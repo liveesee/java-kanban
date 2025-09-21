@@ -1,12 +1,10 @@
-package ru.practicum;
-
-import ru.practicum.manager.HistoryManager;
-import ru.practicum.manager.Managers;
-import ru.practicum.manager.TaskManager;
-import ru.practicum.model.Epic;
-import ru.practicum.model.Status;
-import ru.practicum.model.Subtask;
-import ru.practicum.model.Task;
+import manager.HistoryManager;
+import manager.Managers;
+import manager.TaskManager;
+import model.Epic;
+import model.Status;
+import model.Subtask;
+import model.Task;
 
 import java.util.ArrayList;
 

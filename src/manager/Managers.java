@@ -1,4 +1,4 @@
-package ru.practicum.manager;
+package manager;
 
 public final class Managers {
 

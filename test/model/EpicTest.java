@@ -1,10 +1,11 @@
-package ru.practicum.model;
+package model;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import ru.practicum.manager.HistoryManager;
-import ru.practicum.manager.Managers;
-import ru.practicum.manager.TaskManager;
+import manager.HistoryManager;
+import manager.Managers;
+import manager.TaskManager;
 
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class EpicTest {
         taskManager.createEpic(epic);
         Subtask subtask = new Subtask("s1", "s1d", epic.getId());
         taskManager.createSubtask(subtask);
-        assertEquals(Status.NEW, epic.getStatus());
+        Assertions.assertEquals(Status.NEW, epic.getStatus());
         assertEquals(Status.NEW, subtask.getStatus());
         subtask.setStatus(Status.DONE);
         taskManager.updateSubtask(subtask);
