@@ -1,8 +1,8 @@
-package model;
+package kanban.model;
 
-import manager.HistoryManager;
-import manager.Managers;
-import manager.TaskManager;
+import kanban.manager.HistoryManager;
+import kanban.manager.Managers;
+import kanban.manager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

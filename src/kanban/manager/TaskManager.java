@@ -1,10 +1,11 @@
-package manager;
+package kanban.manager;
 
-import model.Epic;
-import model.Subtask;
-import model.Task;
+import kanban.model.Epic;
+import kanban.model.Subtask;
+import kanban.model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public interface TaskManager {
     int generateId();
@@ -21,7 +22,7 @@ public interface TaskManager {
 
     void deleteAllSubtasks();
 
-    ArrayList<Task> getHistory();
+    List<Task> getHistory();
 
     Task getTaskById(int id);
 

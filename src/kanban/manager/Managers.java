@@ -1,4 +1,4 @@
-package manager;
+package kanban.manager;
 
 public final class Managers {
 

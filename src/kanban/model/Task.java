@@ -1,4 +1,4 @@
-package model;
+package kanban.model;
 
 import java.util.Objects;
 

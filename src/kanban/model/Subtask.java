@@ -1,4 +1,4 @@
-package model;
+package kanban.model;
 
 public class Subtask extends Task {
     private int epicId;

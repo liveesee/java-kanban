@@ -1,12 +1,15 @@
-import manager.HistoryManager;
-import manager.Managers;
-import manager.TaskManager;
-import model.Epic;
-import model.Status;
-import model.Subtask;
-import model.Task;
+package kanban;
+
+import kanban.manager.HistoryManager;
+import kanban.manager.Managers;
+import kanban.manager.TaskManager;
+import kanban.model.Epic;
+import kanban.model.Status;
+import kanban.model.Subtask;
+import kanban.model.Task;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
@@ -43,7 +46,7 @@ public class Main {
         System.out.println("Просматриваем задачу 1 повторно:");
         manager.getTaskById(1);
 
-        ArrayList<Task> history = manager.getHistory();
+        List<Task> history = manager.getHistory();
         System.out.printf("\nИстория просмотров (%d записей):%n", history.size());
         for (int i = 0; i < history.size(); i++) {
             Task task = history.get(i);
@@ -80,7 +83,7 @@ public class Main {
         System.out.println("Просматриваем обновленную подзадачу 3:");
         manager.getSubtaskById(7);
 
-        ArrayList<Task> updatedHistory = manager.getHistory();
+        List<Task> updatedHistory = manager.getHistory();
         System.out.printf("\nОбновленная история просмотров (%d записей):%n", updatedHistory.size());
         for (int i = 0; i < updatedHistory.size(); i++) {
             Task task = updatedHistory.get(i);
@@ -110,7 +113,7 @@ public class Main {
         System.out.printf("Статус эпика 1: %s (должен быть DONE - все подзадачи DONE)%n", finalEpic1.getStatus());
         System.out.printf("Статус эпика 2: %s (должен быть IN_PROGRESS - подзадача IN_PROGRESS)%n", finalEpic2.getStatus());
 
-        ArrayList<Task> finalHistory = manager.getHistory();
+        List<Task> finalHistory = manager.getHistory();
         System.out.printf("\nФинальная история (%d записей):%n", finalHistory.size());
         for (int i = 0; i < finalHistory.size(); i++) {
             Task task = finalHistory.get(i);

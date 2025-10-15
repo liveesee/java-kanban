@@ -1,8 +1,8 @@
-package model;
+package kanban.model;
 
-import manager.HistoryManager;
-import manager.Managers;
-import manager.TaskManager;
+import kanban.manager.HistoryManager;
+import kanban.manager.Managers;
+import kanban.manager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +47,7 @@ public class SubtaskTest {
     void subtaskShouldNotBeItsOwnEpic() {
         Epic epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("s1", "s1d", 1);
+        Subtask subtask = new Subtask("s1", "s1d", epic.getId());
         subtask.setId(1);
         taskManager.createSubtask(subtask);
         assertTrue(taskManager.getAllSubtasks().isEmpty());

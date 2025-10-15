@@ -1,10 +1,10 @@
-package manager;
+package kanban.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import model.Epic;
-import model.Subtask;
-import model.Task;
+import kanban.model.Epic;
+import kanban.model.Subtask;
+import kanban.model.Task;
 
 import java.util.List;
 
@@ -172,4 +172,21 @@ public class InMemoryTaskManagerTest {
         List<Subtask> subtaskList = taskManager.getAllSubtasks();
         assertEquals(0, subtaskList.size());
     }
+
+    @Test
+    public void changesFromOutsideShouldNotAffectSavedTask() {
+        Task task = new Task("t1", "d1");
+        taskManager.createTask(task);
+        Task savedBeforeChange = taskManager.getTaskById(task.getId());
+        task.setTitle("changed");
+        task.setDescription("changed outside");
+        Task savedAfterChange = taskManager.getTaskById(task.getId());
+
+        assertEquals(savedBeforeChange.getTitle(), savedAfterChange.getTitle(),
+                "Изменения во внешнем объекте не должны влиять на менеджер");
+        assertEquals(savedBeforeChange.getDescription(), savedAfterChange.getDescription(),
+                "Данные внутри менеджера должны быть изолированы от внешних изменений");
+    }
+
+
 }
