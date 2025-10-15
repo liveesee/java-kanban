@@ -20,7 +20,7 @@ public class InMemoryHistoryMangerTest {
     }
 
     @Test
-    public void historyShouldSaveLastVersionOfTask(){
+    public void historyShouldSaveLastVersionOfTask() {
         Task original = new Task("t1", "original");
         taskManager.createTask(original);
         taskManager.getTaskById(original.getId());
@@ -49,7 +49,7 @@ public class InMemoryHistoryMangerTest {
     }
 
     @Test
-    public void shouldRemoveTasksFromHistory(){
+    public void shouldRemoveTasksFromHistory() {
         Task task1 = new Task("t1", "d1");
         Task task2 = new Task("t2", "d2");
         taskManager.createTask(task1);

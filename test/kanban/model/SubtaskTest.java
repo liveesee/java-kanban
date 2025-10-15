@@ -20,24 +20,21 @@ public class SubtaskTest {
     private Subtask subtask;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         historyManager = Managers.getDefaultHistory();
         taskManager = Managers.getDefault(historyManager);
-
     }
 
     @Test
-    public void createNewSubtask(){
+    public void createNewSubtask() {
         epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
         subtask = new Subtask("s1", "s1d", epic.getId());
         taskManager.createSubtask(subtask);
-
         List<Subtask> subtaskList = taskManager.getSubtasksByEpicId(epic.getId());
         assertNotNull(subtaskList);
         assertEquals(subtaskList.get(0), subtask);
         assertEquals(1, subtaskList.size());
-
         Task savedSubtask = taskManager.getSubtaskById(subtask.getId());
         assertNotNull(savedSubtask);
         assertEquals(subtask, savedSubtask);
@@ -54,7 +51,7 @@ public class SubtaskTest {
     }
 
     @Test
-    public void shouldSaveItsEpicID(){
+    public void shouldSaveItsEpicID() {
         epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
         subtask = new Subtask("s1", "s1d", epic.getId());

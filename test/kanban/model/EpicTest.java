@@ -21,14 +21,14 @@ public class EpicTest {
     private Epic epic;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         historyManager = Managers.getDefaultHistory();
         taskManager = Managers.getDefault(historyManager);
         epic = new Epic("e1", "e1d");
     }
 
     @Test
-    public void createNewEpic(){
+    public void createNewEpic() {
         taskManager.createEpic(epic);
         Epic savedEpic = taskManager.getEpicById(epic.getId());
         assertNotNull(savedEpic, "Задача не должна быть пустой");
@@ -40,7 +40,7 @@ public class EpicTest {
     }
 
     @Test
-    public void shouldNotBeAbleToAddEpicInsideItself(){
+    public void shouldNotBeAbleToAddEpicInsideItself() {
         taskManager.createEpic(epic);
         Subtask invalid = new Subtask("s1", "s1d", epic.getId());
         invalid.setId(epic.getId());
@@ -49,7 +49,7 @@ public class EpicTest {
     }
 
     @Test
-    public void shouldCreateWithoutSubtasks(){
+    public void shouldCreateWithoutSubtasks() {
         assertTrue(epic.getSubtaskIds().isEmpty());
     }
 
@@ -67,7 +67,7 @@ public class EpicTest {
     }
 
     @Test
-    public void shouldChangeStatusWhenSubtaskChangedStatus(){
+    public void shouldChangeStatusWhenSubtaskChangedStatus() {
         taskManager.createEpic(epic);
         Subtask subtask = new Subtask("s1", "s1d", epic.getId());
         taskManager.createSubtask(subtask);
@@ -80,7 +80,7 @@ public class EpicTest {
     }
 
     @Test
-    public void subclassesShouldBeEqualsIfHaveSameID(){
+    public void subclassesShouldBeEqualsIfHaveSameID() {
         epic.setId(1);
         Subtask subtask = new Subtask("s1", "s1d",1);
         subtask.setId(1);
