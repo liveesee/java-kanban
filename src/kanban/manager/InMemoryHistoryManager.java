@@ -44,7 +44,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node<Task> next = node.next;
         if (prev == null) {
             first = next;
-            if(next != null){
+            if (next != null) {
                 next.prev = null;
             }
         } else {
