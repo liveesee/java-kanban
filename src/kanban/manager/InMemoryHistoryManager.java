@@ -22,7 +22,7 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node<Task> oldLast = last;
         Node<Task> newLast = new Node<>(oldLast, task, null);
         last = newLast;
-        if(oldLast == null){
+        if (oldLast == null) {
             first = last;
         } else {
             oldLast.next = newLast;
@@ -32,7 +32,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     public List<Task> getTasks() {
         List<Task> tasks = new ArrayList<>();
         Node<Task> currentTask = first;
-        while(currentTask != null){
+        while (currentTask != null) {
             tasks.add(currentTask.data);
             currentTask = currentTask.next;
         }
@@ -42,7 +42,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     public void removeNode(Node<Task> node) {
         Node<Task> prev = node.prev;
         Node<Task> next = node.next;
-        if(prev == null) {
+        if (prev == null) {
             first = next;
             if(next != null){
                 next.prev = null;
@@ -50,9 +50,9 @@ public class InMemoryHistoryManager implements HistoryManager {
         } else {
             prev.next = next;
         }
-        if(next == null) {
+        if (next == null) {
             last = prev;
-            if(prev != null){
+            if (prev != null) {
                 prev.next = null;
             }
         } else {
@@ -70,7 +70,7 @@ public class InMemoryHistoryManager implements HistoryManager {
 
     @Override
     public void add(Task task) {
-        if(idToNode.containsKey(task.getId())) {
+        if (idToNode.containsKey(task.getId())) {
             Node<Task> nodeToDelete = idToNode.get(task.getId());
             removeNode(nodeToDelete);
         }
@@ -81,7 +81,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void remove(int id) {
         Node<Task> nodeToRemove = idToNode.remove(id);
-        if(nodeToRemove != null){
+        if (nodeToRemove != null) {
             removeNode(nodeToRemove);
         }
     }

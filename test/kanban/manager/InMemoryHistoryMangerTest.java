@@ -14,7 +14,7 @@ public class InMemoryHistoryMangerTest {
     private List<Task> history;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         historyManager = Managers.getDefaultHistory();
         taskManager = Managers.getDefault(historyManager);
     }
