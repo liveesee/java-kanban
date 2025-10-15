@@ -110,8 +110,10 @@ public class Main {
 
         Epic finalEpic1 = manager.getEpicById(3);
         Epic finalEpic2 = manager.getEpicById(6);
-        System.out.printf("Статус эпика 1: %s (должен быть DONE - все подзадачи DONE)%n", finalEpic1.getStatus());
-        System.out.printf("Статус эпика 2: %s (должен быть IN_PROGRESS - подзадача IN_PROGRESS)%n", finalEpic2.getStatus());
+        System.out.printf("Статус эпика 1: %s (должен быть DONE - все подзадачи DONE)%n",
+                finalEpic1.getStatus());
+        System.out.printf("Статус эпика 2: %s (должен быть IN_PROGRESS - подзадача IN_PROGRESS)%n",
+                finalEpic2.getStatus());
 
         List<Task> finalHistory = manager.getHistory();
         System.out.printf("\nФинальная история (%d записей):%n", finalHistory.size());
