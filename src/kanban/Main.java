@@ -3,8 +3,6 @@ package kanban;
 import kanban.manager.*;
 import kanban.model.*;
 
-import java.util.List;
-
 public class Main {
     public static void main(String[] args) {
         HistoryManager historyManager = Managers.getDefaultHistory();
@@ -34,7 +32,6 @@ public class Main {
         taskManager.getSubtaskById(secondEpic1Subtask.getId());
         taskManager.getTaskById(task1.getId());
         taskManager.getEpicById(epic1.getId());
-
         System.out.println("\nИстория просмотров:");
         for (Task t : taskManager.getHistory()) {
             System.out.printf("%s ID=%d - %s%n", t.getClass().getSimpleName(), t.getId(), t.getTitle());
