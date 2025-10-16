@@ -48,7 +48,7 @@ public class InMemoryHistoryManager implements HistoryManager {
                 next.prev = null;
             }
         } else {
-            prev.next = next;
+            prev.next  = next;
         }
         if (next == null) {
             last = prev;
