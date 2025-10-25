@@ -1,12 +1,12 @@
-package manager;
+package kanban.manager;
 
 public final class Managers {
 
-    private Managers(){
+    private Managers() {
 
     }
 
-    public static TaskManager getDefault(HistoryManager historyManager){
+    public static TaskManager getDefault(HistoryManager historyManager) {
         return new InMemoryTaskManager(historyManager);
     }
 

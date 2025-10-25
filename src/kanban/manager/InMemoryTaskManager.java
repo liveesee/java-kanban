@@ -1,20 +1,21 @@
-package manager;
+package kanban.manager;
 
-import model.Epic;
-import model.Status;
-import model.Subtask;
-import model.Task;
+import kanban.model.Epic;
+import kanban.model.Status;
+import kanban.model.Subtask;
+import kanban.model.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
+
     private HistoryManager historyManager;
     private HashMap<Integer, Task> tasks;
     private HashMap<Integer, Subtask> subtasks;
     private HashMap<Integer, Epic> epics;
     private int nextId;
-
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         tasks = new HashMap<>();
@@ -65,7 +66,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Task> getHistory(){
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 
@@ -139,6 +140,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteTaskById(int id) {
         tasks.remove(id);
+        historyManager.remove(id);
     }
 
     @Override
@@ -147,6 +149,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (int subtaskId : epic.getSubtaskIds()) {
             subtasks.remove(subtaskId);
         }
+        historyManager.remove(id);
     }
 
     @Override
@@ -155,6 +158,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic epic = epics.get(subtask.getEpicId());
         epic.removeSubtaskId(id);
         updateEpicStatus(epic.getId());
+        historyManager.remove(id);
     }
 
     @Override

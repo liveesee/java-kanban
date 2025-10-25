@@ -1,10 +1,10 @@
-package manager;
+package kanban.manager;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import model.Epic;
-import model.Subtask;
-import model.Task;
+import kanban.model.Epic;
+import kanban.model.Subtask;
+import kanban.model.Task;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class InMemoryTaskManagerTest {
     private HistoryManager historyManager;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         historyManager = Managers.getDefaultHistory();
         taskManager = Managers.getDefault(historyManager);
     }
@@ -31,7 +31,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldBeAbleToCreateEveryTypeOfTasksAndFindThemByID(){
+    public void shouldBeAbleToCreateEveryTypeOfTasksAndFindThemByID() {
         Task task = new Task("t1", "t1d");
         taskManager.createTask(task);
         Epic epic = new Epic("e1", "e1d");
@@ -44,7 +44,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldNotBeConflictBetweenAutoAndManualIDSet(){
+    public void shouldNotBeConflictBetweenAutoAndManualIDSet() {
         Task task1 = new Task("t1", "t1d");
         Task task2 = new Task("t2", "t2d");
         taskManager.createTask(task1);
@@ -55,7 +55,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void taskShouldBeUnchangedAfterAddedToManager(){
+    public void taskShouldBeUnchangedAfterAddedToManager() {
         Task task = new Task("t1", "t1d");
         taskManager.createTask(task);
         Task sameTask = taskManager.getTaskById(task.getId());
@@ -66,7 +66,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldFindAllTasks(){
+    public void shouldFindAllTasks() {
         Task task1 = new Task("t1", "t1d");
         Task task2 = new Task("t2", "t2d");
         taskManager.createTask(task1);
@@ -79,7 +79,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldFindAllEpics(){
+    public void shouldFindAllEpics() {
         Epic epic1 = new Epic("e1", "e1d");
         Epic epic2 = new Epic("e2", "e2d");
         taskManager.createEpic(epic1);
@@ -92,7 +92,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldFindAllSubtasks(){
+    public void shouldFindAllSubtasks() {
         Epic epic1 = new Epic("e1", "e1d");
         Epic epic2 = new Epic("e2", "e2d");
         taskManager.createEpic(epic1);
@@ -109,7 +109,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldDeleteTasksByID(){
+    public void shouldDeleteTasksByID() {
         Task task1 = new Task("t1", "t1d");
         taskManager.createTask(task1);
         taskManager.deleteTaskById(task1.getId());
@@ -118,7 +118,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldDeleteAllTasks(){
+    public void shouldDeleteAllTasks() {
         Task task1 = new Task("t1", "t1d");
         Task task2 = new Task("t2", "t2d");
         taskManager.createTask(task1);
@@ -128,9 +128,8 @@ public class InMemoryTaskManagerTest {
         assertEquals(0, taskList.size());
     }
 
-
     @Test
-    public void shouldDeleteEpicsByID(){
+    public void shouldDeleteEpicsByID() {
         Epic epic1 = new Epic("e1", "e1d");
         taskManager.createEpic(epic1);
         taskManager.deleteEpicById(epic1.getId());
@@ -139,7 +138,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldDeleteAllEpics(){
+    public void shouldDeleteAllEpics() {
         Epic epic1 = new Epic("e1", "e1d");
         Epic epic2 = new Epic("e2", "e2d");
         taskManager.createEpic(epic1);
@@ -150,7 +149,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldDeleteSubtasksByID(){
+    public void shouldDeleteSubtasksByID() {
         Epic epic1 = new Epic("e1", "e1d");
         taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("s1", "s1d", epic1.getId());
@@ -161,7 +160,7 @@ public class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void shouldDeleteAllSubtasks(){
+    public void shouldDeleteAllSubtasks() {
         Epic epic1 = new Epic("e1", "e1d");
         taskManager.createEpic(epic1);
         Subtask subtask1 = new Subtask("s1", "s1d", epic1.getId());
@@ -171,5 +170,19 @@ public class InMemoryTaskManagerTest {
         taskManager.deleteAllSubtasks();
         List<Subtask> subtaskList = taskManager.getAllSubtasks();
         assertEquals(0, subtaskList.size());
+    }
+
+    @Test
+    public void changesFromOutsideShouldNotAffectSavedTask() {
+        Task task = new Task("t1", "d1");
+        taskManager.createTask(task);
+        Task savedBeforeChange = taskManager.getTaskById(task.getId());
+        task.setTitle("changed");
+        task.setDescription("changed outside");
+        Task savedAfterChange = taskManager.getTaskById(task.getId());
+        assertEquals(savedBeforeChange.getTitle(), savedAfterChange.getTitle(),
+                "Изменения во внешнем объекте не должны влиять на менеджер");
+        assertEquals(savedBeforeChange.getDescription(), savedAfterChange.getDescription(),
+                "Данные внутри менеджера должны быть изолированы от внешних изменений");
     }
 }

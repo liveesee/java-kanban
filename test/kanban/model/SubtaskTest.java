@@ -1,8 +1,8 @@
-package model;
+package kanban.model;
 
-import manager.HistoryManager;
-import manager.Managers;
-import manager.TaskManager;
+import kanban.manager.HistoryManager;
+import kanban.manager.Managers;
+import kanban.manager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -20,24 +20,21 @@ public class SubtaskTest {
     private Subtask subtask;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         historyManager = Managers.getDefaultHistory();
         taskManager = Managers.getDefault(historyManager);
-
     }
 
     @Test
-    public void createNewSubtask(){
+    public void createNewSubtask() {
         epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
         subtask = new Subtask("s1", "s1d", epic.getId());
         taskManager.createSubtask(subtask);
-
         List<Subtask> subtaskList = taskManager.getSubtasksByEpicId(epic.getId());
         assertNotNull(subtaskList);
         assertEquals(subtaskList.get(0), subtask);
         assertEquals(1, subtaskList.size());
-
         Task savedSubtask = taskManager.getSubtaskById(subtask.getId());
         assertNotNull(savedSubtask);
         assertEquals(subtask, savedSubtask);
@@ -47,14 +44,14 @@ public class SubtaskTest {
     void subtaskShouldNotBeItsOwnEpic() {
         Epic epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("s1", "s1d", 1);
+        Subtask subtask = new Subtask("s1", "s1d", epic.getId());
         subtask.setId(1);
         taskManager.createSubtask(subtask);
         assertTrue(taskManager.getAllSubtasks().isEmpty());
     }
 
     @Test
-    public void shouldSaveItsEpicID(){
+    public void shouldSaveItsEpicID() {
         epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
         subtask = new Subtask("s1", "s1d", epic.getId());

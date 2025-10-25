@@ -1,8 +1,8 @@
-package model;
+package kanban.model;
 
-import manager.HistoryManager;
-import manager.Managers;
-import manager.TaskManager;
+import kanban.manager.HistoryManager;
+import kanban.manager.Managers;
+import kanban.manager.TaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -17,20 +17,18 @@ public class TaskTest {
     private Task task;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         historyManager = Managers.getDefaultHistory();
         taskManager = Managers.getDefault(historyManager);
         task = new Task("t1", "t1d");
     }
 
     @Test
-    public void createNewTask(){
+    public void createNewTask() {
         taskManager.createTask(task);
-
         Task savedTask = taskManager.getTaskById(task.getId());
         assertNotNull(savedTask, "Задача не должна быть пустой");
         assertEquals(task, savedTask, "Задачи не равны");
-
         List<Task> taskList = taskManager.getAllTasks();
         assertNotNull(taskList, "Задачи не возвращаются");
         assertEquals(taskList.get(0), task, "Задачи не равны");
@@ -38,7 +36,7 @@ public class TaskTest {
     }
 
     @Test
-    public void shouldUpdateData(){
+    public void shouldUpdateData() {
         task.setId(2);
         task.setTitle("updated");
         task.setDescription("updated description");
@@ -50,7 +48,7 @@ public class TaskTest {
     }
 
     @Test
-    public void tasksShouldBeEqualsIfHaveSameID(){
+    public void tasksShouldBeEqualsIfHaveSameID() {
         Task task2 = new Task("t2", "t2d");
         task.setId(1);
         task2.setId(1);
