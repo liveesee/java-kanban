@@ -13,7 +13,6 @@ import java.nio.file.Files;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-
     File file;
 
     public FileBackedTaskManager(HistoryManager historyManager, File file) {
@@ -25,8 +24,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this(Managers.getDefaultHistory(), file);
     }
 
-    public String toString(Task task){
-        if (task == null){
+    public String toString(Task task) {
+        if (task == null) {
             return null;
         }
         TaskType type;
@@ -49,8 +48,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return stringFromTask;
     }
 
-    public Task fromString(String string){
-        if(string == null){
+    public Task fromString(String string) {
+        if(string == null) {
             return null;
         }
         String[] s = string.split(",");
@@ -74,7 +73,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return taskFromString;
     }
 
-    public static FileBackedTaskManager loadFromFile(File file){
+    public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager manager = new FileBackedTaskManager(file);
         if (!file.exists()) {
             return manager;
@@ -94,14 +93,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     manager.tasks.put(task.getId(), task);
                 }
             }
-            // Восстановление связей подзадач с эпиками
             for (Subtask subtask : manager.subtasks.values()) {
                 Epic epic = manager.epics.get(subtask.getEpicId());
                 if (epic != null) {
                     epic.addSubtaskId(subtask.getId());
                 }
             }
-            // Восстановление nextId
             int maxId = 0;
             for (Integer id : manager.tasks.keySet()) {
                 if (id > maxId) maxId = id;
