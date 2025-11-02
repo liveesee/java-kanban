@@ -23,8 +23,8 @@ public class FileBackedTaskManagerTest {
 
     @Test
     public void shouldSaveAndLoadEmptyFile() {
-        FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
-        manager.save();
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
+        fileBackedTaskManager.save();
         
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
         
@@ -37,47 +37,47 @@ public class FileBackedTaskManagerTest {
     public void shouldSaveAndLoadTasks() {
         FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
         
-        Task task1 = new Task("t1", "td1");
-        Task task2 = new Task("t2", "td2");
-        manager.createTask(task1);
-        manager.createTask(task2);
+        Task firstTask = new Task("task 1 name", "task 1 description");
+        Task secondTask = new Task("task 2 name", "task 2 description");
+        manager.createTask(firstTask);
+        manager.createTask(secondTask);
         
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
         
         List<Task> loadedTasks = loadedManager.getAllTasks();
         assertEquals(2, loadedTasks.size(), "Должно быть загружено 2 задачи");
-        assertEquals(task1.getTitle(), loadedTasks.get(0).getTitle(), "Заголовок первой задачи должен совпадать");
-        assertEquals(task2.getTitle(), loadedTasks.get(1).getTitle(), "Заголовок второй задачи должен совпадать");
+        assertEquals(firstTask.getTitle(), loadedTasks.get(0).getTitle(), "Заголовок первой задачи должен совпадать");
+        assertEquals(secondTask.getTitle(), loadedTasks.get(1).getTitle(), "Заголовок второй задачи должен совпадать");
     }
 
     @Test
     public void shouldSaveAndLoadEpics() {
         FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
         
-        Epic epic1 = new Epic("e1", "ed1");
-        Epic epic2 = new Epic("e2", "ed2");
-        manager.createEpic(epic1);
-        manager.createEpic(epic2);
+        Epic firstEpic = new Epic("epic1name", "epic 1 ");
+        Epic secondEpic = new Epic("epic1name", "ed2");
+        manager.createEpic(firstEpic);
+        manager.createEpic(secondEpic);
         
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
         
         List<Epic> loadedEpics = loadedManager.getAllEpics();
         assertEquals(2, loadedEpics.size(), "Должно быть загружено 2 эпика");
-        assertEquals(epic1.getTitle(), loadedEpics.get(0).getTitle(), "Заголовок первого эпика должен совпадать");
-        assertEquals(epic2.getTitle(), loadedEpics.get(1).getTitle(), "Заголовок второго эпика должен совпадать");
+        assertEquals(firstEpic.getTitle(), loadedEpics.get(0).getTitle(), "Заголовок первого эпика должен совпадать");
+        assertEquals(secondEpic.getTitle(), loadedEpics.get(1).getTitle(), "Заголовок второго эпика должен совпадать");
     }
 
     @Test
     public void shouldSaveAndLoadSubtasks() {
-        FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
         
-        Epic epic = new Epic("e1", "ed1");
-        manager.createEpic(epic);
+        Epic testEpic = new Epic("epic 1 name", "epic 1 description");
+        fileBackedTaskManager.createEpic(testEpic);
         
-        Subtask subtask1 = new Subtask("s1", "sd1", epic.getId());
-        Subtask subtask2 = new Subtask("s2", "sd2", epic.getId());
-        manager.createSubtask(subtask1);
-        manager.createSubtask(subtask2);
+        Subtask subtask1 = new Subtask("subtask 1 name", "subtask 1 description", testEpic.getId());
+        Subtask subtask2 = new Subtask("subtask 2 name", "subtask 2 description", testEpic.getId());
+        fileBackedTaskManager.createSubtask(subtask1);
+        fileBackedTaskManager.createSubtask(subtask2);
         
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
         
@@ -89,16 +89,16 @@ public class FileBackedTaskManagerTest {
 
     @Test
     public void shouldRestoreNextId() {
-        FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
         
-        Task task1 = new Task("t1", "td1");
-        Task task2 = new Task("t2", "td2");
-        manager.createTask(task1);
-        manager.createTask(task2);
+        Task firstTask = new Task("task 1 name", "task 1 description");
+        Task secondTask = new Task("task 2 name", "task 2 description");
+        fileBackedTaskManager.createTask(firstTask);
+        fileBackedTaskManager.createTask(secondTask);
         
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
         
-        Task newTask = new Task("t3", "td3");
+        Task newTask = new Task("task 3 name", "task 3 description");
         loadedManager.createTask(newTask);
         
         assertEquals(3, newTask.getId(), "Новый ID должен быть 3");
@@ -106,37 +106,37 @@ public class FileBackedTaskManagerTest {
 
     @Test
     public void shouldWorkLikeInMemoryTaskManager() {
-        FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
         
-        Task task = new Task("t1", "td1");
-        manager.createTask(task);
+        Task testTask = new Task("task 1 name", "task 1 description");
+        fileBackedTaskManager.createTask(testTask);
         
-        Epic epic = new Epic("e1", "ed1");
-        manager.createEpic(epic);
+        Epic taskEpic = new Epic("epic 1 name", "epic 1 description");
+        fileBackedTaskManager.createEpic(taskEpic);
         
-        Subtask subtask = new Subtask("s1", "sd1", epic.getId());
-        manager.createSubtask(subtask);
+        Subtask subtask = new Subtask("subtask 1 name", "subtask 1 description", taskEpic.getId());
+        fileBackedTaskManager.createSubtask(subtask);
         
-        assertEquals(task, manager.getTaskById(task.getId()), "Должен находить задачу по ID");
-        assertEquals(epic, manager.getEpicById(epic.getId()), "Должен находить эпик по ID");
-        assertEquals(subtask, manager.getSubtaskById(subtask.getId()), "Должен находить подзадачу по ID");
+        assertEquals(testTask, fileBackedTaskManager.getTaskById(testTask.getId()), "Должен находить задачу по ID");
+        assertEquals(taskEpic, fileBackedTaskManager.getEpicById(taskEpic.getId()), "Должен находить эпик по ID");
+        assertEquals(subtask, fileBackedTaskManager.getSubtaskById(subtask.getId()), "Должен находить подзадачу по ID");
     }
 
     @Test
     public void shouldUpdateAndDeleteCorrectly() {
-        FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
         
-        Task task = new Task("t1", "td1");
-        manager.createTask(task);
+        Task testTask = new Task("task 1 name", "task 1 description");
+        fileBackedTaskManager.createTask(testTask);
         
-        task.setTitle("updated");
-        manager.updateTask(task);
+        testTask.setTitle("updated task name");
+        fileBackedTaskManager.updateTask(testTask);
         
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
         List<Task> loadedTasks = loadedManager.getAllTasks();
-        assertEquals("updated", loadedTasks.get(0).getTitle(), "Заголовок должен быть изменён");
+        assertEquals("updated task name", loadedTasks.get(0).getTitle(), "Заголовок должен быть изменён");
         
-        loadedManager.deleteTaskById(task.getId());
+        loadedManager.deleteTaskById(testTask.getId());
         assertEquals(0, loadedManager.getAllTasks().size(), "Задача должна быть удалена");
     }
 }

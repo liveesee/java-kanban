@@ -28,22 +28,22 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (task == null) {
             return null;
         }
-        TaskType type;
+        TaskType taskType;
         String stringFromTask;
         if (task instanceof Subtask) {
-            type = TaskType.SUBTASK;
+            taskType = TaskType.SUBTASK;
             Subtask subtask = (Subtask) task;
             stringFromTask = String.format("%d,%s,%s,%s,%s,%d",
-                    task.getId(), type, task.getTitle(), task.getDescription(),
+                    task.getId(), taskType, task.getTitle(), task.getDescription(),
                     task.getStatus(), subtask.getEpicId());
         } else if (task instanceof Epic) {
-            type = TaskType.EPIC;
+            taskType = TaskType.EPIC;
             stringFromTask = String.format("%d,%s,%s,%s,%s",
-                    task.getId(), type, task.getTitle(), task.getDescription(), task.getStatus());
+                    task.getId(), taskType, task.getTitle(), task.getDescription(), task.getStatus());
         } else {
-            type = TaskType.TASK;
+            taskType = TaskType.TASK;
             stringFromTask = String.format("%d,%s,%s,%s,%s",
-                    task.getId(), type, task.getTitle(), task.getDescription(), task.getStatus());
+                    task.getId(), taskType, task.getTitle(), task.getDescription(), task.getStatus());
         }
         return stringFromTask;
     }
@@ -52,17 +52,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         if (string == null) {
             return null;
         }
-        String[] s = string.split(",");
-        TaskType type = TaskType.valueOf(s[1].trim());
-        int id = Integer.parseInt(s[0].trim());
-        String title = s[2].trim();
-        String description = s[3].trim();
-        Status status = Status.valueOf(s[4].trim());
+        String[] stringSplitArray = string.split(",");
+        TaskType taskType = TaskType.valueOf(stringSplitArray[1].trim());
+        int id = Integer.parseInt(stringSplitArray[0].trim());
+        String title = stringSplitArray[2].trim();
+        String description = stringSplitArray[3].trim();
+        Status status = Status.valueOf(stringSplitArray[4].trim());
         Task taskFromString;
-        if (type == TaskType.SUBTASK) {
-            int epicId = Integer.parseInt(s[5].trim());
+        if (taskType == TaskType.SUBTASK) {
+            int epicId = Integer.parseInt(stringSplitArray[5].trim());
             taskFromString = new Subtask(title, description, epicId);
-        } else if (type == TaskType.EPIC) {
+        } else if (taskType == TaskType.EPIC) {
             taskFromString = new Epic(title, description);
         } else {
             taskFromString = new Task(title, description);
