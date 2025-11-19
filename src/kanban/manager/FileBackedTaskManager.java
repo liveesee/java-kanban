@@ -74,16 +74,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             int epicId = Integer.parseInt(stringSplitArray[5].trim());
             String startTime = stringSplitArray.length > 6 ? stringSplitArray[6].trim() : "";
             String duration = stringSplitArray.length > 7 ? stringSplitArray[7].trim() : "";
-            taskFromString = new Subtask(title, description, epicId, 
-                    startTime.isEmpty() ? null : startTime, 
+            taskFromString = new Subtask(title, description, epicId,
+                    startTime.isEmpty() ? null : startTime,
                     duration.isEmpty() ? null : duration);
         } else if (taskType == TaskType.EPIC) {
             taskFromString = new Epic(title, description);
         } else {
             String startTime = stringSplitArray.length > 5 ? stringSplitArray[5].trim() : "";
             String duration = stringSplitArray.length > 6 ? stringSplitArray[6].trim() : "";
-            taskFromString = new Task(title, description, 
-                    startTime.isEmpty() ? null : startTime, 
+            taskFromString = new Task(title, description,
+                    startTime.isEmpty() ? null : startTime,
                     duration.isEmpty() ? null : duration);
         }
         taskFromString.setId(id);
