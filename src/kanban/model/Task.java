@@ -70,7 +70,7 @@ public class Task {
         this.id = id;
     }
 
-    public LocalDateTime getEndTime(){
+    public LocalDateTime getEndTime() {
         return startTime.plus(duration);
     }
 
