@@ -20,7 +20,7 @@ public class TaskTest {
     public void setUp() {
         historyManager = Managers.getDefaultHistory();
         taskManager = Managers.getDefault(historyManager);
-        task = new Task("t1", "t1d");
+        task = new Task("t1", "t1d", "10:00, 01.01.24", "60");
     }
 
     @Test
@@ -49,10 +49,23 @@ public class TaskTest {
 
     @Test
     public void tasksShouldBeEqualsIfHaveSameID() {
-        Task task2 = new Task("t2", "t2d");
+        Task task2 = new Task("t2", "t2d", "11:00, 02.01.24", "30");
         task.setId(1);
         task2.setId(1);
         assertEquals(task.getId(), task2.getId(), "У задач неравен ID");
         assertEquals(task, task2, "Задачи не равны");
+    }
+
+    @Test
+    public void shouldHaveStartTimeAndDuration() {
+        assertNotNull(task.getStartTime(), "Задача должна иметь startTime");
+        assertNotNull(task.getDuration(), "Задача должна иметь duration");
+    }
+
+    @Test
+    public void shouldCalculateEndTime() {
+        assertNotNull(task.getEndTime(), "Задача должна иметь endTime");
+        assertEquals(task.getStartTime().plus(task.getDuration()), task.getEndTime(),
+                "endTime должен быть равен startTime + duration");
     }
 }

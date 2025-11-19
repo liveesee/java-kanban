@@ -1,6 +1,5 @@
 package kanban.model;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import kanban.manager.HistoryManager;
@@ -42,7 +41,7 @@ public class EpicTest {
     @Test
     public void shouldNotBeAbleToAddEpicInsideItself() {
         taskManager.createEpic(epic);
-        Subtask invalid = new Subtask("s1", "s1d", epic.getId());
+        Subtask invalid = new Subtask("s1", "s1d", epic.getId(), "10:00, 01.01.24", "60");
         invalid.setId(epic.getId());
         taskManager.createSubtask(invalid);
         assertTrue(taskManager.getAllSubtasks().isEmpty(), "");
@@ -69,9 +68,9 @@ public class EpicTest {
     @Test
     public void shouldChangeStatusWhenSubtaskChangedStatus() {
         taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("s1", "s1d", epic.getId());
+        Subtask subtask = new Subtask("s1", "s1d", epic.getId(), "10:00, 01.01.24", "60");
         taskManager.createSubtask(subtask);
-        Assertions.assertEquals(Status.NEW, epic.getStatus());
+        assertEquals(Status.NEW, epic.getStatus());
         assertEquals(Status.NEW, subtask.getStatus());
         subtask.setStatus(Status.DONE);
         taskManager.updateSubtask(subtask);
@@ -82,7 +81,7 @@ public class EpicTest {
     @Test
     public void subclassesShouldBeEqualsIfHaveSameID() {
         epic.setId(1);
-        Subtask subtask = new Subtask("s1", "s1d",1);
+        Subtask subtask = new Subtask("s1", "s1d", 1, "10:00, 01.01.24", "60");
         subtask.setId(1);
         assertEquals(epic, subtask, "Подклассы не равны");
     }
@@ -90,8 +89,8 @@ public class EpicTest {
     @Test
     public void epicShouldNotHaveDeletedSubtaskIds() {
         taskManager.createEpic(epic);
-        Subtask subtask1 = new Subtask("s1", "d1", epic.getId());
-        Subtask subtask2 = new Subtask("s2", "d2", epic.getId());
+        Subtask subtask1 = new Subtask("s1", "d1", epic.getId(), "10:00, 01.01.24", "60");
+        Subtask subtask2 = new Subtask("s2", "d2", epic.getId(), "11:00, 01.01.24", "30");
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.deleteSubtaskById(subtask1.getId());
@@ -104,7 +103,7 @@ public class EpicTest {
     @Test
     public void shouldNotSaveOldIdsInDeletedSubtasks() {
         taskManager.createEpic(epic);
-        Subtask subtask1 = new Subtask("s1", "d1", epic.getId());
+        Subtask subtask1 = new Subtask("s1", "d1", epic.getId(), "10:00, 01.01.24", "60");
         taskManager.createSubtask(subtask1);
         taskManager.deleteSubtaskById(subtask1.getId());
         assertEquals(0, taskManager.getAllSubtasks().size(),
@@ -112,4 +111,94 @@ public class EpicTest {
         assertEquals(0, epic.getSubtaskIds().size(),
                 "После удаления у эпика не должно остаться старых id подзадач");
     }
+
+    @Test
+    public void shouldCalculateTimeFieldsFromSubtasks() {
+        taskManager.createEpic(epic);
+        Subtask subtask1 = new Subtask("s1", "d1", epic.getId(), "10:00, 01.01.24", "60");
+        Subtask subtask2 = new Subtask("s2", "d2", epic.getId(), "11:00, 01.01.24", "30");
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        
+        Epic savedEpic = taskManager.getEpicById(epic.getId());
+        assertNotNull(savedEpic.getStartTime(), "Epic должен иметь startTime");
+        assertNotNull(savedEpic.getEndTime(), "Epic должен иметь endTime");
+        assertNotNull(savedEpic.getDuration(), "Epic должен иметь duration");
+        assertEquals(savedEpic.getStartTime(), subtask1.getStartTime(),
+                "Epic startTime должен быть равен самому раннему startTime подзадач");
+        assertEquals(savedEpic.getEndTime(), subtask2.getEndTime(),
+                "Epic endTime должен быть равен самому позднему endTime подзадач");
+    }
+
+    @Test
+    public void epicStatusShouldBeNewWhenAllSubtasksAreNew() {
+        taskManager.createEpic(epic);
+        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00, 01.01.24", "60");
+        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00, 01.01.24", "30");
+        
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        
+        Epic savedEpic = taskManager.getEpicById(epic.getId());
+        assertEquals(Status.NEW, savedEpic.getStatus(), 
+                "Epic должен иметь статус NEW, когда все подзадачи имеют статус NEW");
+    }
+
+    @Test
+    public void epicStatusShouldBeDoneWhenAllSubtasksAreDone() {
+        taskManager.createEpic(epic);
+        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00, 01.01.24", "60");
+        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00, 01.01.24", "30");
+        
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        
+        subtask1.setStatus(Status.DONE);
+        subtask2.setStatus(Status.DONE);
+        taskManager.updateSubtask(subtask1);
+        taskManager.updateSubtask(subtask2);
+        
+        Epic savedEpic = taskManager.getEpicById(epic.getId());
+        assertEquals(Status.DONE, savedEpic.getStatus(), 
+                "Epic должен иметь статус DONE, когда все подзадачи имеют статус DONE");
+    }
+
+    @Test
+    public void epicStatusShouldBeInProgressWhenSubtasksHaveNewAndDone() {
+        taskManager.createEpic(epic);
+        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00, 01.01.24", "60");
+        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00, 01.01.24", "30");
+        
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        
+        subtask1.setStatus(Status.NEW);
+        subtask2.setStatus(Status.DONE);
+        taskManager.updateSubtask(subtask1);
+        taskManager.updateSubtask(subtask2);
+        
+        Epic savedEpic = taskManager.getEpicById(epic.getId());
+        assertEquals(Status.IN_PROGRESS, savedEpic.getStatus(), 
+                "Epic должен иметь статус IN_PROGRESS, когда подзадачи имеют статусы NEW и DONE");
+    }
+
+    @Test
+    public void epicStatusShouldBeInProgressWhenSubtasksHaveInProgress() {
+        taskManager.createEpic(epic);
+        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00, 01.01.24", "60");
+        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00, 01.01.24", "30");
+        
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+        
+        subtask1.setStatus(Status.IN_PROGRESS);
+        subtask2.setStatus(Status.IN_PROGRESS);
+        taskManager.updateSubtask(subtask1);
+        taskManager.updateSubtask(subtask2);
+        
+        Epic savedEpic = taskManager.getEpicById(epic.getId());
+        assertEquals(Status.IN_PROGRESS, savedEpic.getStatus(), 
+                "Epic должен иметь статус IN_PROGRESS, когда подзадачи имеют статус IN_PROGRESS");
+    }
+
 }

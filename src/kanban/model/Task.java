@@ -1,5 +1,8 @@
 package kanban.model;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -7,10 +10,15 @@ public class Task {
     private String description;
     private int id;
     private Status status;
+    private Duration duration;
+    private LocalDateTime startTime;
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm, dd.MM.yy");
 
-    public Task(String title, String description) {
+    public Task(String title, String description, String startTime, String duration) {
         this.title = title;
         this.description = description;
+        this.startTime = LocalDateTime.parse(startTime, formatter);
+        this.duration = Duration.ofMinutes(Integer.parseInt(duration));
         this.status = Status.NEW;
     }
 
@@ -30,6 +38,22 @@ public class Task {
         return status;
     }
 
+    public Duration getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     public void setTitle(String title) {
         this.title = title;
     }
@@ -44,6 +68,10 @@ public class Task {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public LocalDateTime getEndTime(){
+        return startTime.plus(duration);
     }
 
     @Override
@@ -65,7 +93,9 @@ public class Task {
                 "id=" + id +
                 ", title='" + title + '\'' +
                 ", description='" + description + '\'' +
-                ", status=" + status +
+                ", status=" + status + '\'' +
+                ", startTime=" + startTime + '\'' +
+                ", duration=" + duration +
                 '}';
     }
 }

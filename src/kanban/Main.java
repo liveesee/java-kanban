@@ -7,8 +7,8 @@ public class Main {
     public static void main(String[] args) {
         HistoryManager historyManager = Managers.getDefaultHistory();
         TaskManager taskManager = new InMemoryTaskManager(historyManager);
-        Task task1 = new Task("Задача 1", "Описание 1");
-        Task task2 = new Task("Задача 2", "Описание 2");
+        Task task1 = new Task("Задача 1", "Описание 1", "10:00, 01.01.24", "60");
+        Task task2 = new Task("Задача 2", "Описание 2", "11:00, 01.01.24", "30");
         taskManager.createTask(task1);
         taskManager.createTask(task2);
 
@@ -17,9 +17,9 @@ public class Main {
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
 
-        Subtask firstEpic1Subtask = new Subtask("Подзадача 1.1", "Описание 1", epic1.getId());
-        Subtask secondEpic1Subtask = new Subtask("Подзадача 1.2", "Описание 2", epic1.getId());
-        Subtask firstEpic2Subtask = new Subtask("Подзадача 2.1", "Описание 1", epic2.getId());
+        Subtask firstEpic1Subtask = new Subtask("Подзадача 1.1", "Описание 1", epic1.getId(), "12:00, 01.01.24", "45");
+        Subtask secondEpic1Subtask = new Subtask("Подзадача 1.2", "Описание 2", epic1.getId(), "13:00, 01.01.24", "30");
+        Subtask firstEpic2Subtask = new Subtask("Подзадача 2.1", "Описание 1", epic2.getId(), "14:00, 01.01.24", "60");
         taskManager.createSubtask(firstEpic1Subtask);
         taskManager.createSubtask(secondEpic1Subtask);
         taskManager.createSubtask(firstEpic2Subtask);

@@ -29,7 +29,7 @@ public class SubtaskTest {
     public void createNewSubtask() {
         epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
-        subtask = new Subtask("s1", "s1d", epic.getId());
+        subtask = new Subtask("s1", "s1d", epic.getId(), "10:00, 01.01.24", "60");
         taskManager.createSubtask(subtask);
         List<Subtask> subtaskList = taskManager.getSubtasksByEpicId(epic.getId());
         assertNotNull(subtaskList);
@@ -44,7 +44,7 @@ public class SubtaskTest {
     void subtaskShouldNotBeItsOwnEpic() {
         Epic epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("s1", "s1d", epic.getId());
+        Subtask subtask = new Subtask("s1", "s1d", epic.getId(), "10:00, 01.01.24", "60");
         subtask.setId(1);
         taskManager.createSubtask(subtask);
         assertTrue(taskManager.getAllSubtasks().isEmpty());
@@ -54,7 +54,7 @@ public class SubtaskTest {
     public void shouldSaveItsEpicID() {
         epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
-        subtask = new Subtask("s1", "s1d", epic.getId());
+        subtask = new Subtask("s1", "s1d", epic.getId(), "10:00, 01.01.24", "60");
         taskManager.createSubtask(subtask);
         assertEquals(epic.getId(), subtask.getEpicId());
     }

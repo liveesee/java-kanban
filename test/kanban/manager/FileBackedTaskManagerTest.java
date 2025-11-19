@@ -12,13 +12,28 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class FileBackedTaskManagerTest {
+public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskManager> {
     private File tempFile;
 
+    @Override
+    protected FileBackedTaskManager createTaskManager() {
+        try {
+            tempFile = File.createTempFile("test", ".csv");
+            tempFile.deleteOnExit();
+            return new FileBackedTaskManager(tempFile);
+        } catch (IOException e) {
+            throw new RuntimeException("Не удалось создать временный файл", e);
+        }
+    }
+
     @BeforeEach
-    public void setUp() throws IOException {
+    public void setUpFile() throws IOException {
+        if (tempFile != null && tempFile.exists()) {
+            tempFile.delete();
+        }
         tempFile = File.createTempFile("test", ".csv");
         tempFile.deleteOnExit();
+        taskManager = new FileBackedTaskManager(tempFile);
     }
 
     @Test
@@ -37,8 +52,8 @@ public class FileBackedTaskManagerTest {
     public void shouldSaveAndLoadTasks() {
         FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
         
-        Task firstTask = new Task("task 1 name", "task 1 description");
-        Task secondTask = new Task("task 2 name", "task 2 description");
+        Task firstTask = new Task("task 1 name", "task 1 description", "10:00, 01.01.24", "60");
+        Task secondTask = new Task("task 2 name", "task 2 description", "11:00, 01.01.24", "30");
         manager.createTask(firstTask);
         manager.createTask(secondTask);
         
@@ -74,8 +89,8 @@ public class FileBackedTaskManagerTest {
         Epic testEpic = new Epic("epic 1 name", "epic 1 description");
         fileBackedTaskManager.createEpic(testEpic);
         
-        Subtask subtask1 = new Subtask("subtask 1 name", "subtask 1 description", testEpic.getId());
-        Subtask subtask2 = new Subtask("subtask 2 name", "subtask 2 description", testEpic.getId());
+        Subtask subtask1 = new Subtask("subtask 1 name", "subtask 1 description", testEpic.getId(), "10:00, 01.01.24", "60");
+        Subtask subtask2 = new Subtask("subtask 2 name", "subtask 2 description", testEpic.getId(), "11:00, 01.01.24", "30");
         fileBackedTaskManager.createSubtask(subtask1);
         fileBackedTaskManager.createSubtask(subtask2);
         
@@ -91,42 +106,25 @@ public class FileBackedTaskManagerTest {
     public void shouldRestoreNextId() {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
         
-        Task firstTask = new Task("task 1 name", "task 1 description");
-        Task secondTask = new Task("task 2 name", "task 2 description");
+        Task firstTask = new Task("task 1 name", "task 1 description", "10:00, 01.01.24", "60");
+        Task secondTask = new Task("task 2 name", "task 2 description", "11:00, 01.01.24", "30");
         fileBackedTaskManager.createTask(firstTask);
         fileBackedTaskManager.createTask(secondTask);
         
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
         
-        Task newTask = new Task("task 3 name", "task 3 description");
+        Task newTask = new Task("task 3 name", "task 3 description", "12:00, 01.01.24", "45");
         loadedManager.createTask(newTask);
         
         assertEquals(3, newTask.getId(), "Новый ID должен быть 3");
     }
 
-    @Test
-    public void shouldWorkLikeInMemoryTaskManager() {
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
-        
-        Task testTask = new Task("task 1 name", "task 1 description");
-        fileBackedTaskManager.createTask(testTask);
-        
-        Epic taskEpic = new Epic("epic 1 name", "epic 1 description");
-        fileBackedTaskManager.createEpic(taskEpic);
-        
-        Subtask subtask = new Subtask("subtask 1 name", "subtask 1 description", taskEpic.getId());
-        fileBackedTaskManager.createSubtask(subtask);
-        
-        assertEquals(testTask, fileBackedTaskManager.getTaskById(testTask.getId()), "Должен находить задачу по ID");
-        assertEquals(taskEpic, fileBackedTaskManager.getEpicById(taskEpic.getId()), "Должен находить эпик по ID");
-        assertEquals(subtask, fileBackedTaskManager.getSubtaskById(subtask.getId()), "Должен находить подзадачу по ID");
-    }
 
     @Test
     public void shouldUpdateAndDeleteCorrectly() {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
         
-        Task testTask = new Task("task 1 name", "task 1 description");
+        Task testTask = new Task("task 1 name", "task 1 description", "10:00, 01.01.24", "60");
         fileBackedTaskManager.createTask(testTask);
         
         testTask.setTitle("updated task name");
@@ -138,5 +136,54 @@ public class FileBackedTaskManagerTest {
         
         loadedManager.deleteTaskById(testTask.getId());
         assertEquals(0, loadedManager.getAllTasks().size(), "Задача должна быть удалена");
+    }
+
+    @Test
+    public void shouldSaveAndLoadTimeFields() {
+        FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
+        
+        Task task = new Task("task 1", "description", "10:00, 01.01.24", "60");
+        manager.createTask(task);
+        
+        FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
+        List<Task> loadedTasks = loadedManager.getAllTasks();
+        
+        assertEquals(1, loadedTasks.size(), "Должна быть загружена 1 задача");
+        Task loadedTask = loadedTasks.get(0);
+        assertNotNull(loadedTask.getStartTime(), "Загруженная задача должна иметь startTime");
+        assertNotNull(loadedTask.getDuration(), "Загруженная задача должна иметь duration");
+        assertNotNull(loadedTask.getEndTime(), "Загруженная задача должна иметь endTime");
+        assertEquals(task.getStartTime(), loadedTask.getStartTime(), "startTime должен совпадать");
+        assertEquals(task.getDuration(), loadedTask.getDuration(), "duration должен совпадать");
+    }
+
+    @Test
+    public void shouldHandleIOExceptionWhenSaving() throws IOException {
+        File directory = File.createTempFile("test", "");
+        directory.delete();
+        directory.mkdir();
+        directory.deleteOnExit();
+        
+        FileBackedTaskManager manager = new FileBackedTaskManager(directory);
+        Task task = new Task("task 1", "description", "10:00, 01.01.24", "60");
+        manager.createTask(task);
+        
+        assertThrows(ManagerSaveException.class, () -> {
+            manager.save();
+        }, "Сохранение в директорию должно вызывать ManagerSaveException");
+    }
+
+    @Test
+    public void shouldThrowExceptionWhenLoadingInvalidData() throws IOException {
+        File invalidFile = File.createTempFile("invalid", ".csv");
+        invalidFile.deleteOnExit();
+        
+        try (java.io.FileWriter writer = new java.io.FileWriter(invalidFile)) {
+            writer.write("invalid,data,format\n");
+        }
+        
+        assertThrows(RuntimeException.class, () -> {
+            FileBackedTaskManager.loadFromFile(invalidFile);
+        }, "Загрузка из файла с невалидными данными должна вызывать исключение");
     }
 }

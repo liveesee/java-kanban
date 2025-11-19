@@ -6,11 +6,14 @@ import kanban.model.Task;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeSet;
 
 public interface TaskManager {
     int generateId();
 
     ArrayList<Task> getAllTasks();
+
+    TreeSet<Task> getPrioritizedTasks();
 
     ArrayList<Epic> getAllEpics();
 
@@ -51,4 +54,8 @@ public interface TaskManager {
     ArrayList<Subtask> getSubtasksByEpicId(int epicId);
 
     void updateEpicStatus(int epicId);
+
+    boolean isTimeCross(Task t1, Task t2);
+
+    boolean isTaskTimeValid(Task newTask);
 }
