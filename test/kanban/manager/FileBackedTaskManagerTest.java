@@ -1,6 +1,5 @@
 package kanban.manager;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import kanban.model.Epic;
 import kanban.model.Subtask;
@@ -18,22 +17,15 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     @Override
     protected FileBackedTaskManager createTaskManager() {
         try {
+            if (tempFile != null && tempFile.exists()) {
+                tempFile.delete();
+            }
             tempFile = File.createTempFile("test", ".csv");
             tempFile.deleteOnExit();
             return new FileBackedTaskManager(tempFile);
         } catch (IOException e) {
             throw new RuntimeException("Не удалось создать временный файл", e);
         }
-    }
-
-    @BeforeEach
-    public void setUpFile() throws IOException {
-        if (tempFile != null && tempFile.exists()) {
-            tempFile.delete();
-        }
-        tempFile = File.createTempFile("test", ".csv");
-        tempFile.deleteOnExit();
-        taskManager = new FileBackedTaskManager(tempFile);
     }
 
     @Test
@@ -52,8 +44,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     public void shouldSaveAndLoadTasks() {
         FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
         
-        Task firstTask = new Task("task 1 name", "task 1 description", "10:00, 01.01.24", "60");
-        Task secondTask = new Task("task 2 name", "task 2 description", "11:00, 01.01.24", "30");
+        Task firstTask = new Task("task 1 name", "task 1 description", "10:00 01.01.24", "60");
+        Task secondTask = new Task("task 2 name", "task 2 description", "11:00 01.01.24", "30");
         manager.createTask(firstTask);
         manager.createTask(secondTask);
         
@@ -89,8 +81,8 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         Epic testEpic = new Epic("epic 1 name", "epic 1 description");
         fileBackedTaskManager.createEpic(testEpic);
         
-        Subtask subtask1 = new Subtask("subtask 1 name", "subtask 1 description", testEpic.getId(), "10:00, 01.01.24", "60");
-        Subtask subtask2 = new Subtask("subtask 2 name", "subtask 2 description", testEpic.getId(), "11:00, 01.01.24", "30");
+        Subtask subtask1 = new Subtask("subtask 1 name", "subtask 1 description", testEpic.getId(), "10:00 01.01.24", "60");
+        Subtask subtask2 = new Subtask("subtask 2 name", "subtask 2 description", testEpic.getId(), "11:00 01.01.24", "30");
         fileBackedTaskManager.createSubtask(subtask1);
         fileBackedTaskManager.createSubtask(subtask2);
         
@@ -106,14 +98,14 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     public void shouldRestoreNextId() {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
         
-        Task firstTask = new Task("task 1 name", "task 1 description", "10:00, 01.01.24", "60");
-        Task secondTask = new Task("task 2 name", "task 2 description", "11:00, 01.01.24", "30");
+        Task firstTask = new Task("task 1 name", "task 1 description", "10:00 01.01.24", "60");
+        Task secondTask = new Task("task 2 name", "task 2 description", "11:00 01.01.24", "30");
         fileBackedTaskManager.createTask(firstTask);
         fileBackedTaskManager.createTask(secondTask);
         
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
         
-        Task newTask = new Task("task 3 name", "task 3 description", "12:00, 01.01.24", "45");
+        Task newTask = new Task("task 3 name", "task 3 description", "12:00 01.01.24", "45");
         loadedManager.createTask(newTask);
         
         assertEquals(3, newTask.getId(), "Новый ID должен быть 3");
@@ -124,7 +116,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     public void shouldUpdateAndDeleteCorrectly() {
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tempFile);
         
-        Task testTask = new Task("task 1 name", "task 1 description", "10:00, 01.01.24", "60");
+        Task testTask = new Task("task 1 name", "task 1 description", "10:00 01.01.24", "60");
         fileBackedTaskManager.createTask(testTask);
         
         testTask.setTitle("updated task name");
@@ -142,7 +134,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     public void shouldSaveAndLoadTimeFields() {
         FileBackedTaskManager manager = new FileBackedTaskManager(tempFile);
         
-        Task task = new Task("task 1", "description", "10:00, 01.01.24", "60");
+        Task task = new Task("task 1", "description", "10:00 01.01.24", "60");
         manager.createTask(task);
         
         FileBackedTaskManager loadedManager = FileBackedTaskManager.loadFromFile(tempFile);
@@ -165,8 +157,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         directory.deleteOnExit();
         
         FileBackedTaskManager manager = new FileBackedTaskManager(directory);
-        Task task = new Task("task 1", "description", "10:00, 01.01.24", "60");
-        manager.createTask(task);
+        Task task = new Task("task 1", "description", "10:00 01.01.24", "60");
+        manager.tasks.put(1, task);
+        task.setId(1);
         
         assertThrows(ManagerSaveException.class, () -> {
             manager.save();

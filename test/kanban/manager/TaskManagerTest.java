@@ -23,11 +23,11 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldBeAbleToCreateEveryTypeOfTasksAndFindThemByID() {
-        Task task = new Task("t1", "t1d", "10:00, 01.01.24", "60");
+        Task task = new Task("t1", "t1d", "10:00 01.01.24", "60");
         taskManager.createTask(task);
         Epic epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("s1", "s1d", epic.getId(), "11:00, 01.01.24", "30");
+        Subtask subtask = new Subtask("s1", "s1d", epic.getId(), "11:00 01.01.24", "30");
         taskManager.createSubtask(subtask);
         assertEquals(task, taskManager.getTaskById(task.getId()), "Задачи должны находиться по ID");
         assertEquals(epic, taskManager.getEpicById(epic.getId()), "Эпики должны находиться по ID");
@@ -36,8 +36,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldNotBeConflictBetweenAutoAndManualIDSet() {
-        Task task1 = new Task("t1", "t1d", "10:00, 01.01.24", "60");
-        Task task2 = new Task("t2", "t2d", "11:00, 01.01.24", "30");
+        Task task1 = new Task("t1", "t1d", "10:00 01.01.24", "60");
+        Task task2 = new Task("t2", "t2d", "11:00 01.01.24", "30");
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         task2.setId(5);
@@ -47,7 +47,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void taskShouldBeUnchangedAfterAddedToManager() {
-        Task task = new Task("t1", "t1d", "10:00, 01.01.24", "60");
+        Task task = new Task("t1", "t1d", "10:00 01.01.24", "60");
         taskManager.createTask(task);
         Task sameTask = taskManager.getTaskById(task.getId());
         assertEquals(task.getId(), sameTask.getId());
@@ -58,8 +58,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldFindAllTasks() {
-        Task task1 = new Task("t1", "t1d", "10:00, 01.01.24", "60");
-        Task task2 = new Task("t2", "t2d", "11:00, 01.01.24", "30");
+        Task task1 = new Task("t1", "t1d", "10:00 01.01.24", "60");
+        Task task2 = new Task("t2", "t2d", "11:00 01.01.24", "30");
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         List<Task> taskList = taskManager.getAllTasks();
@@ -88,8 +88,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Epic epic2 = new Epic("e2", "e2d");
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
-        Subtask subtask1 = new Subtask("s1", "s1d", epic1.getId(), "10:00, 01.01.24", "60");
-        Subtask subtask2 = new Subtask("s2", "s2d", epic2.getId(), "11:00, 01.01.24", "30");
+        Subtask subtask1 = new Subtask("s1", "s1d", epic1.getId(), "10:00 01.01.24", "60");
+        Subtask subtask2 = new Subtask("s2", "s2d", epic2.getId(), "11:00 01.01.24", "30");
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         List<Subtask> subtaskList = taskManager.getAllSubtasks();
@@ -101,7 +101,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldDeleteTasksByID() {
-        Task task1 = new Task("t1", "t1d", "10:00, 01.01.24", "60");
+        Task task1 = new Task("t1", "t1d", "10:00 01.01.24", "60");
         taskManager.createTask(task1);
         taskManager.deleteTaskById(task1.getId());
         List<Task> taskList = taskManager.getAllTasks();
@@ -110,8 +110,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldDeleteAllTasks() {
-        Task task1 = new Task("t1", "t1d", "10:00, 01.01.24", "60");
-        Task task2 = new Task("t2", "t2d", "11:00, 01.01.24", "30");
+        Task task1 = new Task("t1", "t1d", "10:00 01.01.24", "60");
+        Task task2 = new Task("t2", "t2d", "11:00 01.01.24", "30");
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         taskManager.deleteAllTasks();
@@ -143,7 +143,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void shouldDeleteSubtasksByID() {
         Epic epic1 = new Epic("e1", "e1d");
         taskManager.createEpic(epic1);
-        Subtask subtask1 = new Subtask("s1", "s1d", epic1.getId(), "10:00, 01.01.24", "60");
+        Subtask subtask1 = new Subtask("s1", "s1d", epic1.getId(), "10:00 01.01.24", "60");
         taskManager.createSubtask(subtask1);
         taskManager.deleteSubtaskById(subtask1.getId());
         List<Subtask> subtaskList = taskManager.getAllSubtasks();
@@ -154,8 +154,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void shouldDeleteAllSubtasks() {
         Epic epic1 = new Epic("e1", "e1d");
         taskManager.createEpic(epic1);
-        Subtask subtask1 = new Subtask("s1", "s1d", epic1.getId(), "10:00, 01.01.24", "60");
-        Subtask subtask2 = new Subtask("s2", "s2d", epic1.getId(), "11:00, 01.01.24", "30");
+        Subtask subtask1 = new Subtask("s1", "s1d", epic1.getId(), "10:00 01.01.24", "60");
+        Subtask subtask2 = new Subtask("s2", "s2d", epic1.getId(), "11:00 01.01.24", "30");
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.deleteAllSubtasks();
@@ -165,7 +165,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void changesFromOutsideShouldNotAffectSavedTask() {
-        Task task = new Task("t1", "d1", "10:00, 01.01.24", "60");
+        Task task = new Task("t1", "d1", "10:00 01.01.24", "60");
         taskManager.createTask(task);
         Task savedBeforeChange = taskManager.getTaskById(task.getId());
         task.setTitle("changed");
@@ -179,14 +179,14 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldReturnPrioritizedTasks() {
-        Task task1 = new Task("t1", "d1", "12:00, 01.01.24", "60");
-        Task task2 = new Task("t2", "d2", "10:00, 01.01.24", "30");
+        Task task1 = new Task("t1", "d1", "12:00 01.01.24", "60");
+        Task task2 = new Task("t2", "d2", "10:00 01.01.24", "30");
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         
         Epic epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("s1", "s1d", epic.getId(), "11:00, 01.01.24", "45");
+        Subtask subtask = new Subtask("s1", "s1d", epic.getId(), "11:00 01.01.24", "45");
         taskManager.createSubtask(subtask);
         
         TreeSet<Task> prioritized = taskManager.getPrioritizedTasks();
@@ -201,10 +201,10 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldNotIncludeTasksWithNullStartTime() {
-        Task task1 = new Task("t1", "d1", "10:00, 01.01.24", "60");
+        Task task1 = new Task("t1", "d1", "10:00 01.01.24", "60");
         taskManager.createTask(task1);
         
-        Task task2 = new Task("t2", "d2", "11:00, 01.01.24", "30");
+        Task task2 = new Task("t2", "d2", "11:00 01.01.24", "30");
         taskManager.createTask(task2);
         task2.setStartTime(null);
         taskManager.updateTask(task2);
@@ -219,7 +219,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     public void subtaskShouldHaveLinkedEpic() {
         Epic epic = new Epic("e1", "e1d");
         taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("s1", "s1d", epic.getId(), "10:00, 01.01.24", "60");
+        Subtask subtask = new Subtask("s1", "s1d", epic.getId(), "10:00 01.01.24", "60");
         taskManager.createSubtask(subtask);
         
         Subtask savedSubtask = taskManager.getSubtaskById(subtask.getId());
@@ -238,8 +238,8 @@ public abstract class TaskManagerTest<T extends TaskManager> {
 
     @Test
     public void shouldDetectTimeIntervalCrossing() {
-        Task task1 = new Task("t1", "d1", "10:00, 01.01.24", "60");
-        Task task2 = new Task("t2", "d2", "10:30, 01.01.24", "30");
+        Task task1 = new Task("t1", "d1", "10:00 01.01.24", "60");
+        Task task2 = new Task("t2", "d2", "10:30 01.01.24", "30");
         
         taskManager.createTask(task1);
         

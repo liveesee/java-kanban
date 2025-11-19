@@ -5,6 +5,7 @@ import kanban.model.Status;
 import kanban.model.Subtask;
 import kanban.model.Task;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class InMemoryTaskManager implements TaskManager {
         nextId = 1;
         this.historyManager = historyManager;
         this.prioritizedTasks = new TreeSet<>(Comparator
-                .comparing(Task::getStartTime)
+                .comparing(Task::getStartTime, Comparator.nullsLast(Comparator.naturalOrder()))
                 .thenComparing(Task::getId));
     }
 
@@ -281,8 +282,13 @@ public class InMemoryTaskManager implements TaskManager {
         if (t1.getStartTime() == null || t2.getStartTime() == null) {
             return false;
         }
-        return t1.getStartTime().isBefore(t2.getEndTime())
-                && t2.getStartTime().isBefore(t1.getEndTime());
+        LocalDateTime t1EndTime = t1.getEndTime();
+        LocalDateTime t2EndTime = t2.getEndTime();
+        if (t1EndTime == null || t2EndTime == null) {
+            return false;
+        }
+        return t1.getStartTime().isBefore(t2EndTime)
+                && t2.getStartTime().isBefore(t1EndTime);
     }
 
     @Override

@@ -12,13 +12,21 @@ public class Task {
     private Status status;
     private Duration duration;
     private LocalDateTime startTime;
-    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm, dd.MM.yy");
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
 
     public Task(String title, String description, String startTime, String duration) {
         this.title = title;
         this.description = description;
-        this.startTime = LocalDateTime.parse(startTime, formatter);
-        this.duration = Duration.ofMinutes(Integer.parseInt(duration));
+        if (startTime != null && !startTime.isEmpty()) {
+            this.startTime = LocalDateTime.parse(startTime, formatter);
+        } else {
+            this.startTime = null;
+        }
+        if (duration != null && !duration.isEmpty()) {
+            this.duration = Duration.ofMinutes(Integer.parseInt(duration));
+        } else {
+            this.duration = null;
+        }
         this.status = Status.NEW;
     }
 
@@ -71,6 +79,9 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
+        if (startTime == null || duration == null) {
+            return null;
+        }
         return startTime.plus(duration);
     }
 

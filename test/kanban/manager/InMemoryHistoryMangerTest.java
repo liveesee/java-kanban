@@ -19,11 +19,11 @@ public class InMemoryHistoryMangerTest {
 
     @Test
     public void historyShouldSaveLastVersionOfTask() {
-        Task original = new Task("t1", "original", "10:00, 01.01.24", "60");
+        Task original = new Task("t1", "original", "10:00 01.01.24", "60");
         original.setId(1);
         historyManager.add(original);
         
-        Task updated = new Task("t1", "updated", "10:00, 01.01.24", "60");
+        Task updated = new Task("t1", "updated", "10:00 01.01.24", "60");
         updated.setId(1);
         historyManager.add(updated);
         
@@ -36,8 +36,8 @@ public class InMemoryHistoryMangerTest {
 
     @Test
     public void shouldSaveTasksInCorrectOrder() {
-        Task task1 = new Task("t1", "d1", "10:00, 01.01.24", "60");
-        Task task2 = new Task("t2", "d2", "11:00, 01.01.24", "30");
+        Task task1 = new Task("t1", "d1", "10:00 01.01.24", "60");
+        Task task2 = new Task("t2", "d2", "11:00 01.01.24", "30");
         task1.setId(1);
         task2.setId(2);
         
@@ -52,8 +52,8 @@ public class InMemoryHistoryMangerTest {
 
     @Test
     public void shouldRemoveTasksFromHistory() {
-        Task task1 = new Task("t1", "d1", "10:00, 01.01.24", "60");
-        Task task2 = new Task("t2", "d2", "11:00, 01.01.24", "30");
+        Task task1 = new Task("t1", "d1", "10:00 01.01.24", "60");
+        Task task2 = new Task("t2", "d2", "11:00 01.01.24", "30");
         task1.setId(1);
         task2.setId(2);
         
@@ -80,9 +80,9 @@ public class InMemoryHistoryMangerTest {
 
     @Test
     public void shouldMoveDuplicateTaskToEnd() {
-        Task task1 = new Task("t1", "d1", "10:00, 01.01.24", "60");
-        Task task2 = new Task("t2", "d2", "11:00, 01.01.24", "30");
-        Task task3 = new Task("t3", "d3", "12:00, 01.01.24", "45");
+        Task task1 = new Task("t1", "d1", "10:00 01.01.24", "60");
+        Task task2 = new Task("t2", "d2", "11:00 01.01.24", "30");
+        Task task3 = new Task("t3", "d3", "12:00 01.01.24", "45");
         task1.setId(1);
         task2.setId(2);
         task3.setId(3);
@@ -102,9 +102,9 @@ public class InMemoryHistoryMangerTest {
 
     @Test
     public void shouldRemoveTaskFromBeginning() {
-        Task task1 = new Task("t1", "d1", "10:00, 01.01.24", "60");
-        Task task2 = new Task("t2", "d2", "11:00, 01.01.24", "30");
-        Task task3 = new Task("t3", "d3", "12:00, 01.01.24", "45");
+        Task task1 = new Task("t1", "d1", "10:00 01.01.24", "60");
+        Task task2 = new Task("t2", "d2", "11:00 01.01.24", "30");
+        Task task3 = new Task("t3", "d3", "12:00 01.01.24", "45");
         task1.setId(1);
         task2.setId(2);
         task3.setId(3);
@@ -123,9 +123,9 @@ public class InMemoryHistoryMangerTest {
 
     @Test
     public void shouldRemoveTaskFromMiddle() {
-        Task task1 = new Task("t1", "d1", "10:00, 01.01.24", "60");
-        Task task2 = new Task("t2", "d2", "11:00, 01.01.24", "30");
-        Task task3 = new Task("t3", "d3", "12:00, 01.01.24", "45");
+        Task task1 = new Task("t1", "d1", "10:00 01.01.24", "60");
+        Task task2 = new Task("t2", "d2", "11:00 01.01.24", "30");
+        Task task3 = new Task("t3", "d3", "12:00 01.01.24", "45");
         task1.setId(1);
         task2.setId(2);
         task3.setId(3);
@@ -144,9 +144,9 @@ public class InMemoryHistoryMangerTest {
 
     @Test
     public void shouldRemoveTaskFromEnd() {
-        Task task1 = new Task("t1", "d1", "10:00, 01.01.24", "60");
-        Task task2 = new Task("t2", "d2", "11:00, 01.01.24", "30");
-        Task task3 = new Task("t3", "d3", "12:00, 01.01.24", "45");
+        Task task1 = new Task("t1", "d1", "10:00 01.01.24", "60");
+        Task task2 = new Task("t2", "d2", "11:00 01.01.24", "30");
+        Task task3 = new Task("t3", "d3", "12:00 01.01.24", "45");
         task1.setId(1);
         task2.setId(2);
         task3.setId(3);

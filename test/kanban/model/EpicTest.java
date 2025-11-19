@@ -41,7 +41,7 @@ public class EpicTest {
     @Test
     public void shouldNotBeAbleToAddEpicInsideItself() {
         taskManager.createEpic(epic);
-        Subtask invalid = new Subtask("s1", "s1d", epic.getId(), "10:00, 01.01.24", "60");
+        Subtask invalid = new Subtask("s1", "s1d", epic.getId(), "10:00 01.01.24", "60");
         invalid.setId(epic.getId());
         taskManager.createSubtask(invalid);
         assertTrue(taskManager.getAllSubtasks().isEmpty(), "");
@@ -68,7 +68,7 @@ public class EpicTest {
     @Test
     public void shouldChangeStatusWhenSubtaskChangedStatus() {
         taskManager.createEpic(epic);
-        Subtask subtask = new Subtask("s1", "s1d", epic.getId(), "10:00, 01.01.24", "60");
+        Subtask subtask = new Subtask("s1", "s1d", epic.getId(), "10:00 01.01.24", "60");
         taskManager.createSubtask(subtask);
         assertEquals(Status.NEW, epic.getStatus());
         assertEquals(Status.NEW, subtask.getStatus());
@@ -81,7 +81,7 @@ public class EpicTest {
     @Test
     public void subclassesShouldBeEqualsIfHaveSameID() {
         epic.setId(1);
-        Subtask subtask = new Subtask("s1", "s1d", 1, "10:00, 01.01.24", "60");
+        Subtask subtask = new Subtask("s1", "s1d", 1, "10:00 01.01.24", "60");
         subtask.setId(1);
         assertEquals(epic, subtask, "Подклассы не равны");
     }
@@ -89,8 +89,8 @@ public class EpicTest {
     @Test
     public void epicShouldNotHaveDeletedSubtaskIds() {
         taskManager.createEpic(epic);
-        Subtask subtask1 = new Subtask("s1", "d1", epic.getId(), "10:00, 01.01.24", "60");
-        Subtask subtask2 = new Subtask("s2", "d2", epic.getId(), "11:00, 01.01.24", "30");
+        Subtask subtask1 = new Subtask("s1", "d1", epic.getId(), "10:00 01.01.24", "60");
+        Subtask subtask2 = new Subtask("s2", "d2", epic.getId(), "11:00 01.01.24", "30");
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         taskManager.deleteSubtaskById(subtask1.getId());
@@ -103,7 +103,7 @@ public class EpicTest {
     @Test
     public void shouldNotSaveOldIdsInDeletedSubtasks() {
         taskManager.createEpic(epic);
-        Subtask subtask1 = new Subtask("s1", "d1", epic.getId(), "10:00, 01.01.24", "60");
+        Subtask subtask1 = new Subtask("s1", "d1", epic.getId(), "10:00 01.01.24", "60");
         taskManager.createSubtask(subtask1);
         taskManager.deleteSubtaskById(subtask1.getId());
         assertEquals(0, taskManager.getAllSubtasks().size(),
@@ -115,8 +115,8 @@ public class EpicTest {
     @Test
     public void shouldCalculateTimeFieldsFromSubtasks() {
         taskManager.createEpic(epic);
-        Subtask subtask1 = new Subtask("s1", "d1", epic.getId(), "10:00, 01.01.24", "60");
-        Subtask subtask2 = new Subtask("s2", "d2", epic.getId(), "11:00, 01.01.24", "30");
+        Subtask subtask1 = new Subtask("s1", "d1", epic.getId(), "10:00 01.01.24", "60");
+        Subtask subtask2 = new Subtask("s2", "d2", epic.getId(), "11:00 01.01.24", "30");
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
         
@@ -133,8 +133,8 @@ public class EpicTest {
     @Test
     public void epicStatusShouldBeNewWhenAllSubtasksAreNew() {
         taskManager.createEpic(epic);
-        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00, 01.01.24", "60");
-        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00, 01.01.24", "30");
+        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00 01.01.24", "60");
+        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00 01.01.24", "30");
         
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
@@ -147,8 +147,8 @@ public class EpicTest {
     @Test
     public void epicStatusShouldBeDoneWhenAllSubtasksAreDone() {
         taskManager.createEpic(epic);
-        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00, 01.01.24", "60");
-        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00, 01.01.24", "30");
+        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00 01.01.24", "60");
+        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00 01.01.24", "30");
         
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
@@ -166,8 +166,8 @@ public class EpicTest {
     @Test
     public void epicStatusShouldBeInProgressWhenSubtasksHaveNewAndDone() {
         taskManager.createEpic(epic);
-        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00, 01.01.24", "60");
-        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00, 01.01.24", "30");
+        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00 01.01.24", "60");
+        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00 01.01.24", "30");
         
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);
@@ -185,8 +185,8 @@ public class EpicTest {
     @Test
     public void epicStatusShouldBeInProgressWhenSubtasksHaveInProgress() {
         taskManager.createEpic(epic);
-        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00, 01.01.24", "60");
-        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00, 01.01.24", "30");
+        Subtask subtask1 = new Subtask("Subtask 1", "Description 1", epic.getId(), "10:00 01.01.24", "60");
+        Subtask subtask2 = new Subtask("Subtask 2", "Description 2", epic.getId(), "11:00 01.01.24", "30");
         
         taskManager.createSubtask(subtask1);
         taskManager.createSubtask(subtask2);

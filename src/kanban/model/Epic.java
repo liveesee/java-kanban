@@ -16,6 +16,7 @@ public class Epic extends Task {
         this.subtaskIds = new ArrayList<>();
         this.startTime = null;
         this.endTime = null;
+        this.duration = null;
     }
 
     public ArrayList<Integer> getSubtaskIds() {
@@ -54,27 +55,30 @@ public class Epic extends Task {
         Duration totalDuration = Duration.ZERO;
         LocalDateTime earliestStart = null;
         LocalDateTime latestEnd = null;
+        boolean hasValidSubtask = false;
 
         for (Subtask subtask : subtasks) {
             if (subtask == null) {
                 continue;
             }
 
+            hasValidSubtask = true;
+
             if (subtask.getDuration() != null) {
                 totalDuration = totalDuration.plus(subtask.getDuration());
             }
 
-            if (subtask.getStartTime() != null || subtask.getStartTime().isBefore(earliestStart)) {
+            if (subtask.getStartTime() != null && (earliestStart == null || subtask.getStartTime().isBefore(earliestStart))) {
                     earliestStart = subtask.getStartTime();
             }
 
-            if (subtask.getEndTime() != null || subtask.getEndTime().isAfter(earliestStart)) {
+            if (subtask.getEndTime() != null && (latestEnd == null || subtask.getEndTime().isAfter(latestEnd))) {
                 latestEnd = subtask.getEndTime();
             }
         }
 
         this.startTime = earliestStart;
         this.endTime = latestEnd;
-        this.duration = totalDuration;
+        this.duration = hasValidSubtask ? totalDuration : null;
     }
 }
