@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.TreeSet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -189,14 +188,13 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         Subtask subtask = new Subtask("s1", "s1d", epic.getId(), "11:00 01.01.24", "45");
         taskManager.createSubtask(subtask);
         
-        TreeSet<Task> prioritized = taskManager.getPrioritizedTasks();
+        List<Task> prioritized = taskManager.getPrioritizedTasks();
         assertNotNull(prioritized, "Приоритизированный список не должен быть null");
         assertEquals(3, prioritized.size(), "Должно быть 3 задачи в приоритизированном списке");
         
-        List<Task> list = new java.util.ArrayList<>(prioritized);
-        assertEquals(task2, list.get(0), "Первая задача должна быть task2");
-        assertEquals(subtask, list.get(1), "Вторая задача должна быть subtask");
-        assertEquals(task1, list.get(2), "Третья задача должна быть task1");
+        assertEquals(task2, prioritized.get(0), "Первая задача должна быть task2");
+        assertEquals(subtask, prioritized.get(1), "Вторая задача должна быть subtask");
+        assertEquals(task1, prioritized.get(2), "Третья задача должна быть task1");
     }
 
     @Test
@@ -209,7 +207,7 @@ public abstract class TaskManagerTest<T extends TaskManager> {
         task2.setStartTime(null);
         taskManager.updateTask(task2);
         
-        TreeSet<Task> prioritized = taskManager.getPrioritizedTasks();
+        List<Task> prioritized = taskManager.getPrioritizedTasks();
         assertEquals(1, prioritized.size(), "В списке должна быть только одна задача");
         assertTrue(prioritized.contains(task1), "Список должен содержать task1");
         assertFalse(prioritized.contains(task2), "Список не должен содержать task2 с null startTime");
@@ -239,14 +237,18 @@ public abstract class TaskManagerTest<T extends TaskManager> {
     @Test
     public void shouldDetectTimeIntervalCrossing() {
         Task task1 = new Task("t1", "d1", "10:00 01.01.24", "60");
-        Task task2 = new Task("t2", "d2", "10:30 01.01.24", "30");
-        
         taskManager.createTask(task1);
         
-        assertTrue(taskManager.isTimeCross(task1, task2), 
-                "Задачи должны пересекаться по времени");
-        assertFalse(taskManager.isTaskTimeValid(task2), 
-                "Задача с пересекающимся временем не должна быть валидной");
+        Task task2 = new Task("t2", "d2", "10:30 01.01.24", "30");
+        
+        assertThrows(TimeConflictException.class, () -> {
+            taskManager.createTask(task2);
+        }, "Задача с пересекающимся временем должна вызывать исключение");
+        
+        List<Task> prioritized = taskManager.getPrioritizedTasks();
+        assertEquals(1, prioritized.size(), "В приоритизированном списке должна быть только одна задача");
+        assertTrue(prioritized.contains(task1), "Список должен содержать task1");
+        assertFalse(prioritized.contains(task2), "Список не должен содержать task2 с пересекающимся временем");
     }
 
 }

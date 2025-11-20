@@ -7,16 +7,12 @@ import java.util.List;
 
 public class Epic extends Task {
     private ArrayList<Integer> subtaskIds;
-    private LocalDateTime startTime;
     private LocalDateTime endTime;
-    private Duration duration;
 
     public Epic(String title, String description) {
         super(title, description, null, "0");
         this.subtaskIds = new ArrayList<>();
-        this.startTime = null;
         this.endTime = null;
-        this.duration = null;
     }
 
     public ArrayList<Integer> getSubtaskIds() {
@@ -36,16 +32,6 @@ public class Epic extends Task {
     }
 
     @Override
-    public Duration getDuration() {
-        return duration;
-    }
-
-    @Override
-    public LocalDateTime getStartTime() {
-        return  startTime;
-    }
-
-    @Override
     public LocalDateTime getEndTime() {
         return endTime;
     }
@@ -53,8 +39,8 @@ public class Epic extends Task {
     public void updateTimeFields(List<Subtask> subtasks) {
 
         Duration totalDuration = Duration.ZERO;
-        LocalDateTime earliestStart = null;
-        LocalDateTime latestEnd = null;
+        LocalDateTime earliestStart = LocalDateTime.MAX;
+        LocalDateTime latestEnd = LocalDateTime.MIN;
         boolean hasValidSubtask = false;
 
         for (Subtask subtask : subtasks) {
@@ -68,17 +54,17 @@ public class Epic extends Task {
                 totalDuration = totalDuration.plus(subtask.getDuration());
             }
 
-            if (subtask.getStartTime() != null && (earliestStart == null || subtask.getStartTime().isBefore(earliestStart))) {
+            if (subtask.getStartTime() != null && subtask.getStartTime().isBefore(earliestStart)) {
                     earliestStart = subtask.getStartTime();
             }
 
-            if (subtask.getEndTime() != null && (latestEnd == null || subtask.getEndTime().isAfter(latestEnd))) {
+            if (subtask.getEndTime() != null && subtask.getEndTime().isAfter(latestEnd)) {
                 latestEnd = subtask.getEndTime();
             }
         }
 
-        this.startTime = earliestStart;
-        this.endTime = latestEnd;
-        this.duration = hasValidSubtask ? totalDuration : null;
+        setStartTime(hasValidSubtask && earliestStart != LocalDateTime.MAX ? earliestStart : null);
+        this.endTime = hasValidSubtask && latestEnd != LocalDateTime.MIN ? latestEnd : null;
+        setDuration(hasValidSubtask ? totalDuration : null);
     }
 }

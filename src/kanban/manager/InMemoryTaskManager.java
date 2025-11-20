@@ -1,5 +1,7 @@
 package kanban.manager;
 
+import java.util.stream.Collectors;
+
 import kanban.model.Epic;
 import kanban.model.Status;
 import kanban.model.Subtask;
@@ -53,8 +55,8 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public TreeSet<Task> getPrioritizedTasks() {
-        return new TreeSet<>(prioritizedTasks);
+    public List<Task> getPrioritizedTasks() {
+        return new ArrayList<>(prioritizedTasks);
     }
 
     @Override
@@ -123,10 +125,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void createTask(Task task) {
+        if (task.getStartTime() != null && !isTaskTimeValid(task)) {
+            throw new TimeConflictException("Задача пересекается по времени с существующей задачей");
+        }
         int newId = generateId();
         task.setId(newId);
         tasks.put(newId, task);
-        if (task.getStartTime() != null && isTaskTimeValid(task)) {
+        if (task.getStartTime() != null) {
             prioritizedTasks.add(task);
         }
     }
@@ -147,13 +152,16 @@ public class InMemoryTaskManager implements TaskManager {
         if (subtask.getId() == subtask.getEpicId()) {
             return;
         }
+        if (subtask.getStartTime() != null && !isTaskTimeValid(subtask)) {
+            throw new TimeConflictException("Подзадача пересекается по времени с существующей задачей");
+        }
         int newId = generateId();
         subtask.setId(newId);
         subtasks.put(newId, subtask);
         epic.addSubtaskId(newId);
         updateEpicStatus(epic.getId());
         updateEpicTimeFields(epic.getId());
-        if (subtask.getStartTime() != null && isTaskTimeValid(subtask)) {
+        if (subtask.getStartTime() != null) {
             prioritizedTasks.add(subtask);
         }
     }
@@ -164,8 +172,11 @@ public class InMemoryTaskManager implements TaskManager {
         if (oldTask != null && !(oldTask instanceof Epic) && !(oldTask instanceof Subtask)) {
             prioritizedTasks.remove(oldTask);
         }
+        if (task.getStartTime() != null && !isTaskTimeValid(task)) {
+            throw new TimeConflictException("Задача пересекается по времени с существующей задачей");
+        }
         tasks.put(task.getId(), task);
-        if (task.getStartTime() != null && isTaskTimeValid(task)) {
+        if (task.getStartTime() != null) {
             prioritizedTasks.add(task);
         }
     }
@@ -181,10 +192,13 @@ public class InMemoryTaskManager implements TaskManager {
         if (oldSubtask != null) {
             prioritizedTasks.remove(oldSubtask);
         }
+        if (subtask.getStartTime() != null && !isTaskTimeValid(subtask)) {
+            throw new TimeConflictException("Подзадача пересекается по времени с существующей задачей");
+        }
         subtasks.put(subtask.getId(), subtask);
         updateEpicStatus(subtask.getEpicId());
         updateEpicTimeFields(subtask.getEpicId());
-        if (subtask.getStartTime() != null && isTaskTimeValid(subtask)) {
+        if (subtask.getStartTime() != null) {
             prioritizedTasks.add(subtask);
         }
     }
@@ -234,11 +248,10 @@ public class InMemoryTaskManager implements TaskManager {
         return epic.getSubtaskIds().stream()
                 .map(subtasks::get)
                 .filter(subtask -> subtask != null)
-                .collect(java.util.stream.Collectors.toCollection(ArrayList::new));
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 
-    @Override
-    public void updateEpicStatus(int epicId) {
+    private void updateEpicStatus(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic == null) {
             return;
@@ -273,12 +286,11 @@ public class InMemoryTaskManager implements TaskManager {
         List<Subtask> epicSubtasks = epic.getSubtaskIds().stream()
                 .map(subtasks::get)
                 .filter(subtask -> subtask != null)
-                .collect(java.util.stream.Collectors.toList());
+                .collect(Collectors.toList());
         epic.updateTimeFields(epicSubtasks);
     }
 
-    @Override
-    public boolean isTimeCross(Task t1, Task t2) {
+    private boolean isTimeCross(Task t1, Task t2) {
         if (t1.getStartTime() == null || t2.getStartTime() == null) {
             return false;
         }
@@ -291,8 +303,7 @@ public class InMemoryTaskManager implements TaskManager {
                 && t2.getStartTime().isBefore(t1EndTime);
     }
 
-    @Override
-    public  boolean isTaskTimeValid(Task newTask) {
+    private boolean isTaskTimeValid(Task newTask) {
         return prioritizedTasks.stream()
                 .filter(taskInSet -> taskInSet.getId() != newTask.getId())
                 .noneMatch(taskInSet -> isTimeCross(newTask, taskInSet));

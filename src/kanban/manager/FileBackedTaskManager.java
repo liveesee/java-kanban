@@ -224,10 +224,4 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         super.deleteSubtaskById(id);
         save();
     }
-
-    @Override
-    public void updateEpicStatus(int epicId) {
-        super.updateEpicStatus(epicId);
-        save();
-    }
 }
