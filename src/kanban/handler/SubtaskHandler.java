@@ -126,7 +126,6 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
     private void handlePostSubtask(HttpExchange exchange) throws IOException {
         Subtask subtaskFromJson = readSubtaskFromJson(exchange);
         int subtaskId = subtaskFromJson.getId();
-        
         if (subtaskId > 0) {
             try {
                 taskManager.getSubtaskById(subtaskId);
