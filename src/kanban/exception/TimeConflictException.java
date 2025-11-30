@@ -1,4 +1,4 @@
-package kanban.manager;
+package kanban.exception;
 
 public class TimeConflictException extends RuntimeException {
     public TimeConflictException(String message) {

@@ -14,6 +14,10 @@ public class Task {
     private LocalDateTime startTime;
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
 
+    public Task() {
+        this.status = Status.NEW;
+    }
+
     public Task(String title, String description, String startTime, String duration) {
         this.title = title;
         this.description = description;

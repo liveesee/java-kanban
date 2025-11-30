@@ -2,6 +2,8 @@ package kanban.manager;
 
 import java.util.stream.Collectors;
 
+import kanban.exception.TimeConflictException;
+import kanban.exception.NotFoundException;
 import kanban.model.Epic;
 import kanban.model.Status;
 import kanban.model.Subtask;
@@ -105,6 +107,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         Task task = tasks.get(id);
+        if (task == null) {
+            throw new NotFoundException("Задача с идентификатором " + id + " не найдена");
+        }
         historyManager.add(task);
         return task;
     }
@@ -112,6 +117,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         Epic epic = epics.get(id);
+        if (epic == null) {
+            throw new NotFoundException("Эпик с идентификатором " + id + " не найден");
+        }
         historyManager.add(epic);
         return epic;
     }
@@ -119,6 +127,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtasks.get(id);
+        if (subtask == null) {
+            throw new NotFoundException("Подзадача с идентификатором " + id + " не найдена");
+        }
         historyManager.add(subtask);
         return subtask;
     }
