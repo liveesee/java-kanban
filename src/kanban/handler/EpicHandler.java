@@ -33,6 +33,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
 
     private static class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
         private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
+
         @Override
         public void write(JsonWriter jsonWriter, LocalDateTime localDateTime) throws IOException {
             if (localDateTime == null) {
@@ -53,6 +54,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     private static class DurationAdapter extends TypeAdapter<Duration> {
+
         @Override
         public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
             if (duration == null) {
