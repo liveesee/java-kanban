@@ -145,10 +145,9 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 sendText(exchange, response, 201);
                 return;
             } catch (NotFoundException e) {
-
+                throw new NotFoundException(e.getMessage());
             }
         }
-        
         taskManager.createEpic(epicFromJson);
         String response = gson.toJson(epicFromJson);
         sendText(exchange, response, 201);

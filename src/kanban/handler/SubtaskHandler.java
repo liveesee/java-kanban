@@ -135,10 +135,9 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                 sendText(exchange, response, 201);
                 return;
             } catch (NotFoundException e) {
-                // Подзадача не найдена, создаем новую
+                throw new NotFoundException(e.getMessage());
             }
         }
-        
         taskManager.createSubtask(subtaskFromJson);
         String response = gson.toJson(subtaskFromJson);
         sendText(exchange, response, 201);

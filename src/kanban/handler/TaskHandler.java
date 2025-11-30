@@ -126,7 +126,6 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
     private void handlePostTask(HttpExchange exchange) throws IOException {
         Task taskFromJson = readTaskFromJson(exchange);
         int taskId = taskFromJson.getId();
-        
         if (taskId > 0) {
             try {
                 taskManager.getTaskById(taskId);
@@ -135,10 +134,9 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                 sendText(exchange, response, 201);
                 return;
             } catch (NotFoundException e) {
-
+                throw new NotFoundException(e.getMessage());
             }
         }
-        
         taskManager.createTask(taskFromJson);
         String response = gson.toJson(taskFromJson);
         sendText(exchange, response, 201);
