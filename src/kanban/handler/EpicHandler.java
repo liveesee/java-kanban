@@ -81,7 +81,6 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             String path = exchange.getRequestURI().getPath();
             String method = exchange.getRequestMethod();
             String endpoint = getEndpoint(path, method);
-
             switch (endpoint) {
                 case "GET_EPICS":
                     handleGetAllEpics(exchange);
@@ -136,7 +135,6 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     private void handlePostEpic(HttpExchange exchange) throws IOException {
         Epic epicFromJson = readEpicFromJson(exchange);
         int epicId = epicFromJson.getId();
-        
         if (epicId > 0) {
             try {
                 taskManager.getEpicById(epicId);
