@@ -12,6 +12,7 @@ import java.net.http.HttpResponse;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class SubtaskHandlerTest extends HttpTaskServerTest {
+
     @Override
     protected int getPort() {
         return 8082;
