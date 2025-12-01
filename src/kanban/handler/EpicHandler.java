@@ -1,12 +1,6 @@
 package kanban.handler;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.TypeAdapter;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import kanban.manager.TaskManager;
 import kanban.exception.NotFoundException;
 import kanban.model.Epic;
@@ -14,65 +8,11 @@ import kanban.model.Epic;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-public class EpicHandler extends BaseHttpHandler implements HttpHandler {
-    private final TaskManager taskManager;
-
+public class EpicHandler extends BaseHttpHandler {
     public EpicHandler(TaskManager taskManager) {
-        this.taskManager = taskManager;
-    }
-
-    Gson gson = new GsonBuilder()
-        .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-        .registerTypeAdapter(Duration.class, new DurationAdapter())
-        .create();
-
-    private static class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
-        private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
-
-        @Override
-        public void write(JsonWriter jsonWriter, LocalDateTime localDateTime) throws IOException {
-            if (localDateTime == null) {
-                jsonWriter.nullValue();
-            } else {
-                jsonWriter.value(localDateTime.format(dtf));
-            }
-        }
-
-        @Override
-        public LocalDateTime read(JsonReader jsonReader) throws IOException {
-            if (jsonReader.peek() == com.google.gson.stream.JsonToken.NULL) {
-                jsonReader.nextNull();
-                return null;
-            }
-            return LocalDateTime.parse(jsonReader.nextString(), dtf);
-        }
-    }
-
-    private static class DurationAdapter extends TypeAdapter<Duration> {
-
-        @Override
-        public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
-            if (duration == null) {
-                jsonWriter.nullValue();
-            } else {
-                jsonWriter.value(duration.toMinutes());
-            }
-        }
-
-        @Override
-        public Duration read(JsonReader jsonReader) throws IOException {
-            if (jsonReader.peek() == com.google.gson.stream.JsonToken.NULL) {
-                jsonReader.nextNull();
-                return null;
-            }
-            long minutes = jsonReader.nextLong();
-            return Duration.ofMinutes(minutes);
-        }
+        super(taskManager);
     }
 
     @Override
@@ -123,11 +63,10 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     private void handleGetEpicSubtasks(HttpExchange exchange) throws IOException {
-        Optional<Integer> epicIdOptional = getEpicIdFromPath(exchange);
+        Optional<Integer> epicIdOptional = getEpicId(exchange);
         if (epicIdOptional.isEmpty()) {
             throw new NotFoundException("Идентификатор эпика не указан");
         }
-        taskManager.getEpicById(epicIdOptional.get());
         String response = gson.toJson(taskManager.getSubtasksByEpicId(epicIdOptional.get()));
         sendText(exchange, response);
     }
@@ -136,15 +75,10 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         Epic epicFromJson = readEpicFromJson(exchange);
         int epicId = epicFromJson.getId();
         if (epicId > 0) {
-            try {
-                taskManager.getEpicById(epicId);
-                taskManager.updateEpic(epicFromJson);
-                String response = gson.toJson(epicFromJson);
-                sendText(exchange, response, 201);
-                return;
-            } catch (NotFoundException e) {
-                throw new NotFoundException(e.getMessage());
-            }
+            taskManager.updateEpic(epicFromJson);
+            String response = gson.toJson(epicFromJson);
+            sendText(exchange, response, 201);
+            return;
         }
         taskManager.createEpic(epicFromJson);
         String response = gson.toJson(epicFromJson);
@@ -156,8 +90,7 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
         if (epicIdOptional.isEmpty()) {
             throw new NotFoundException("Идентификатор эпика не указан");
         }
-        Epic epic = taskManager.getEpicById(epicIdOptional.get());
-        taskManager.deleteEpicById(epic.getId());
+        taskManager.deleteEpicById(epicIdOptional.get());
         sendText(exchange, "{\"message\":\"Эпик с идентификатором "
                 + epicIdOptional.get() + " удален\"}");
     }
@@ -191,19 +124,6 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
     }
 
     private Optional<Integer> getEpicId(HttpExchange exchange) {
-        String path = exchange.getRequestURI().getPath();
-        String[] parts = path.split("/");
-        if (parts.length < 3) {
-            return Optional.empty();
-        }
-        try {
-            return Optional.of(Integer.parseInt(parts[2]));
-        } catch (NumberFormatException e) {
-            return Optional.empty();
-        }
-    }
-
-    private Optional<Integer> getEpicIdFromPath(HttpExchange exchange) {
         String path = exchange.getRequestURI().getPath();
         String[] parts = path.split("/");
         if (parts.length < 3) {

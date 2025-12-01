@@ -1,14 +1,17 @@
 package kanban.handler;
 
+import com.google.gson.reflect.TypeToken;
 import kanban.model.Task;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PrioritizedHandlerTest extends HttpTaskServerTest {
     @Override
@@ -28,6 +31,14 @@ public class PrioritizedHandlerTest extends HttpTaskServerTest {
             .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
+        Type listType = new TypeToken<List<Task>>(){}.getType();
+        List<Task> prioritizedTasks = gson.fromJson(response.body(), listType);
+        assertNotNull(prioritizedTasks);
+        assertEquals(2, prioritizedTasks.size());
+        assertTrue(prioritizedTasks.stream().anyMatch(t -> t.getId() == task1.getId()));
+        assertTrue(prioritizedTasks.stream().anyMatch(t -> t.getId() == task2.getId()));
+        assertEquals(task1.getId(), prioritizedTasks.get(0).getId());
+        assertEquals(task2.getId(), prioritizedTasks.get(1).getId());
     }
 }
 

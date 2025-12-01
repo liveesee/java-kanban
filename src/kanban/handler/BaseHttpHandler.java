@@ -1,11 +1,27 @@
 package kanban.handler;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import kanban.manager.TaskManager;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 
-public class BaseHttpHandler {
+public abstract class BaseHttpHandler implements HttpHandler {
+    protected final TaskManager taskManager;
+    protected final Gson gson;
+
+    protected BaseHttpHandler(TaskManager taskManager) {
+        this.taskManager = taskManager;
+        this.gson = new GsonBuilder()
+            .registerTypeAdapter(LocalDateTime.class, new GsonAdapters.LocalDateTimeAdapter())
+            .registerTypeAdapter(Duration.class, new GsonAdapters.DurationAdapter())
+            .create();
+    }
 
     protected void sendText(HttpExchange h, String text) throws IOException {
         sendText(h, text, 200);

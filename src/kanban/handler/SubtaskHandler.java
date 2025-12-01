@@ -1,12 +1,6 @@
 package kanban.handler;
 
-import com.google.gson.TypeAdapter;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import kanban.manager.TaskManager;
 import kanban.exception.TimeConflictException;
 import kanban.exception.NotFoundException;
@@ -15,65 +9,11 @@ import kanban.model.Subtask;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
-public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
-    private final TaskManager taskManager;
-
+public class SubtaskHandler extends BaseHttpHandler {
     public SubtaskHandler(TaskManager taskManager) {
-        this.taskManager = taskManager;
-    }
-
-    Gson gson = new GsonBuilder()
-        .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
-        .registerTypeAdapter(Duration.class, new DurationAdapter())
-        .create();
-
-    private static class LocalDateTimeAdapter extends TypeAdapter<LocalDateTime> {
-        private static final DateTimeFormatter dtf = DateTimeFormatter.ofPattern("HH:mm dd.MM.yy");
-
-        @Override
-        public void write(JsonWriter jsonWriter, LocalDateTime localDateTime) throws IOException {
-            if (localDateTime == null) {
-                jsonWriter.nullValue();
-            } else {
-                jsonWriter.value(localDateTime.format(dtf));
-            }
-        }
-
-        @Override
-        public LocalDateTime read(JsonReader jsonReader) throws IOException {
-            if (jsonReader.peek() == com.google.gson.stream.JsonToken.NULL) {
-                jsonReader.nextNull();
-                return null;
-            }
-            return LocalDateTime.parse(jsonReader.nextString(), dtf);
-        }
-    }
-
-    private static class DurationAdapter extends TypeAdapter<Duration> {
-
-        @Override
-        public void write(JsonWriter jsonWriter, Duration duration) throws IOException {
-            if (duration == null) {
-                jsonWriter.nullValue();
-            } else {
-                jsonWriter.value(duration.toMinutes());
-            }
-        }
-
-        @Override
-        public Duration read(JsonReader jsonReader) throws IOException {
-            if (jsonReader.peek() == com.google.gson.stream.JsonToken.NULL) {
-                jsonReader.nextNull();
-                return null;
-            }
-            long minutes = jsonReader.nextLong();
-            return Duration.ofMinutes(minutes);
-        }
+        super(taskManager);
     }
 
     @Override
@@ -127,15 +67,10 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         Subtask subtaskFromJson = readSubtaskFromJson(exchange);
         int subtaskId = subtaskFromJson.getId();
         if (subtaskId > 0) {
-            try {
-                taskManager.getSubtaskById(subtaskId);
-                taskManager.updateSubtask(subtaskFromJson);
-                String response = gson.toJson(subtaskFromJson);
-                sendText(exchange, response, 201);
-                return;
-            } catch (NotFoundException e) {
-                throw new NotFoundException(e.getMessage());
-            }
+            taskManager.updateSubtask(subtaskFromJson);
+            String response = gson.toJson(subtaskFromJson);
+            sendText(exchange, response, 201);
+            return;
         }
         taskManager.createSubtask(subtaskFromJson);
         String response = gson.toJson(subtaskFromJson);
@@ -147,8 +82,7 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
         if (subtaskIdOptional.isEmpty()) {
             throw new NotFoundException("Идентификатор подзадачи не указан");
         }
-        Subtask subtask = taskManager.getSubtaskById(subtaskIdOptional.get());
-        taskManager.deleteSubtaskById(subtask.getId());
+        taskManager.deleteSubtaskById(subtaskIdOptional.get());
         sendText(exchange, "{\"message\":\"Подзадача с идентификатором "
                 + subtaskIdOptional.get() + " удалена\"}");
     }

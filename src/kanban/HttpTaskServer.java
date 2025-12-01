@@ -44,14 +44,6 @@ public class HttpTaskServer {
         httpServer.stop(delay);
     }
 
-    public TaskManager getTaskManager() {
-        return taskManager;
-    }
-
-    public int getPort() {
-        return httpServer.getAddress().getPort();
-    }
-
     public static void main(String[] args) throws IOException {
         HttpTaskServer server = new HttpTaskServer();
         server.start();

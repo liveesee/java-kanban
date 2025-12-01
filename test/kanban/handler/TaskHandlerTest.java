@@ -1,12 +1,15 @@
 package kanban.handler;
 
+import com.google.gson.reflect.TypeToken;
 import kanban.model.Task;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -19,25 +22,40 @@ public class TaskHandlerTest extends HttpTaskServerTest {
 
     @Test
     void shouldReturnAllTasks() throws IOException, InterruptedException {
+        Task task1 = new Task("Task 1", "Description 1", null, null);
+        Task task2 = new Task("Task 2", "Description 2", null, null);
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create("http://localhost:" + port + "/task"))
             .GET()
             .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
+        Type listType = new TypeToken<List<Task>>(){}.getType();
+        List<Task> tasks = gson.fromJson(response.body(), listType);
+        assertNotNull(tasks);
+        assertEquals(2, tasks.size());
+        assertTrue(tasks.stream().anyMatch(t -> t.getId() == task1.getId()));
+        assertTrue(tasks.stream().anyMatch(t -> t.getId() == task2.getId()));
     }
 
     @Test
     void shouldReturnTaskById() throws IOException, InterruptedException {
         Task task = new Task("Test", "Description", null, null);
         taskManager.createTask(task);
-
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create("http://localhost:" + port + "/task/" + task.getId()))
             .GET()
             .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(200, response.statusCode());
+        Task responseTask = gson.fromJson(response.body(), Task.class);
+        assertNotNull(responseTask);
+        assertEquals(task.getId(), responseTask.getId());
+        assertEquals(task.getTitle(), responseTask.getTitle());
+        assertEquals(task.getDescription(), responseTask.getDescription());
+        assertEquals(task.getStatus(), responseTask.getStatus());
     }
 
     @Test
@@ -68,9 +86,7 @@ public class TaskHandlerTest extends HttpTaskServerTest {
         Task task = new Task("Original", "Description", null, null);
         taskManager.createTask(task);
         String updatedJson = String.format(
-            "{\"id\":%d,\"title\":\"Updated\",\"description\":\"Description\",\"status\":\"NEW\"}",
-            task.getId()
-        );
+            "{\"id\":%d,\"title\":\"Updated\",\"description\":\"Description\",\"status\":\"NEW\"}", task.getId());
         HttpRequest request = HttpRequest.newBuilder()
             .uri(URI.create("http://localhost:" + port + "/task"))
             .header("Content-Type", "application/json")
@@ -78,6 +94,10 @@ public class TaskHandlerTest extends HttpTaskServerTest {
             .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         assertEquals(201, response.statusCode());
+        Task responseTask = gson.fromJson(response.body(), Task.class);
+        assertNotNull(responseTask);
+        assertEquals(task.getId(), responseTask.getId());
+        assertEquals("Updated", responseTask.getTitle());
         assertEquals("Updated", taskManager.getTaskById(task.getId()).getTitle());
     }
 
