@@ -3,6 +3,9 @@ package kanban.model;
 public class Subtask extends Task {
     private int epicId;
 
+    public Subtask() {
+    }
+
     public Subtask(String title, String description, int epicId, String startTime, String duration) {
         super(title, description, startTime, duration);
         this.epicId = epicId;

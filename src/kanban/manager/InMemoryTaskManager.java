@@ -2,6 +2,8 @@ package kanban.manager;
 
 import java.util.stream.Collectors;
 
+import kanban.exception.TimeConflictException;
+import kanban.exception.NotFoundException;
 import kanban.model.Epic;
 import kanban.model.Status;
 import kanban.model.Subtask;
@@ -105,6 +107,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getTaskById(int id) {
         Task task = tasks.get(id);
+        if (task == null) {
+            throw new NotFoundException("Задача с идентификатором " + id + " не найдена");
+        }
         historyManager.add(task);
         return task;
     }
@@ -112,6 +117,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic getEpicById(int id) {
         Epic epic = epics.get(id);
+        if (epic == null) {
+            throw new NotFoundException("Эпик с идентификатором " + id + " не найден");
+        }
         historyManager.add(epic);
         return epic;
     }
@@ -119,6 +127,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Subtask getSubtaskById(int id) {
         Subtask subtask = subtasks.get(id);
+        if (subtask == null) {
+            throw new NotFoundException("Подзадача с идентификатором " + id + " не найдена");
+        }
         historyManager.add(subtask);
         return subtask;
     }
@@ -205,45 +216,51 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTaskById(int id) {
-        Task task = tasks.remove(id);
-        if (task != null) {
-            prioritizedTasks.remove(task);
+        Task task = tasks.get(id);
+        if (task == null) {
+            throw new NotFoundException("Задача с идентификатором " + id + " не найдена");
         }
+        tasks.remove(id);
+        prioritizedTasks.remove(task);
         historyManager.remove(id);
     }
 
     @Override
     public void deleteEpicById(int id) {
-        Epic epic = epics.remove(id);
-        if (epic != null) {
-            epic.getSubtaskIds().stream()
-                    .map(subtasks::remove)
-                    .filter(subtask -> subtask != null)
-                    .forEach(prioritizedTasks::remove);
-            historyManager.remove(id);
+        Epic epic = epics.get(id);
+        if (epic == null) {
+            throw new NotFoundException("Эпик с идентификатором " + id + " не найден");
         }
+        epic.getSubtaskIds().stream()
+                .map(subtasks::remove)
+                .filter(subtask -> subtask != null)
+                .forEach(prioritizedTasks::remove);
+        epics.remove(id);
+        historyManager.remove(id);
     }
 
     @Override
     public void deleteSubtaskById(int id) {
-        Subtask subtask = subtasks.remove(id);
-        if (subtask != null) {
-            prioritizedTasks.remove(subtask);
-            Epic epic = epics.get(subtask.getEpicId());
-            if (epic != null) {
-                epic.removeSubtaskId(id);
-                updateEpicStatus(epic.getId());
-                updateEpicTimeFields(epic.getId());
-            }
-            historyManager.remove(id);
+        Subtask subtask = subtasks.get(id);
+        if (subtask == null) {
+            throw new NotFoundException("Подзадача с идентификатором " + id + " не найдена");
         }
+        prioritizedTasks.remove(subtask);
+        Epic epic = epics.get(subtask.getEpicId());
+        if (epic != null) {
+            epic.removeSubtaskId(id);
+            updateEpicStatus(epic.getId());
+            updateEpicTimeFields(epic.getId());
+        }
+        subtasks.remove(id);
+        historyManager.remove(id);
     }
 
     @Override
     public ArrayList<Subtask> getSubtasksByEpicId(int epicId) {
         Epic epic = epics.get(epicId);
         if (epic == null) {
-            return new ArrayList<>();
+            throw new NotFoundException("Эпик с идентификатором " + epicId + " не найден");
         }
         return epic.getSubtaskIds().stream()
                 .map(subtasks::get)
